@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{393001ca-138a-4cb0-b970-cb976d503e47}</ProjectGuid>
+    <ProjectGuid>{5fa31feb-6a4a-4f51-a48a-a46ccbb61182}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>mnist_softmax.py</StartupFile>
+    <StartupFile>QLearnApp.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -18,8 +18,25 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="input_data.py" />
-    <Compile Include="mnist_softmax.py" />
+    <Compile Include="Environment.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QLearn.py" />
+    <Compile Include="QLearnApp.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="stock.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="trade.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TradeNN.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>
