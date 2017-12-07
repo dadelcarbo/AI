@@ -44,8 +44,8 @@ def step():
     global ax1
     ax1.set_xlim(0, len(close))
     ax1.plot(range(len(close)), close, label="close")
-    global graph
-    graph.show()
+    global fig
+    fig.canvas.draw()
     
 root = Tk()
 frame = Frame(root)
