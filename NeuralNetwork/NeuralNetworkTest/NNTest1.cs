@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeuralNetwork;
 using System.Linq;
+using NeuralNetwork.Activation;
+using NeuralNetwork.Layer;
+using NeuralNetwork.Loss;
 
 namespace NeuralNetworkTest
 {
@@ -36,6 +40,35 @@ namespace NeuralNetworkTest
                     Console.WriteLine("Error: " + error);
                     Assert.AreNotEqual(outputs[i], nn.OutputLayer.Output[0]);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void TrainingLayer()
+        {
+            double[][] inputs = new double[][] { new double[] { 0, 1 , 0, 1} };
+            double[][] outputs = new double[][] { new double[] { 0, 1, 0 } };
+
+            var layer = new DenseLayer(inputs[0].Length, outputs[0].Length, new Relu());
+
+            for (int iter = 0; iter < 20; iter++)
+            {
+                // Generate input data
+                for (int i = 0; i < inputs[0].Length; i++)
+                {
+                    inputs[0][i] = rnd.NextDouble();
+                }
+
+                // Train network
+                int step = 0;
+                double error = double.MaxValue;
+                double errorTarget = 0.0001;
+                while (step < 1000 && error > errorTarget)
+                {
+                    error = layer.Train(inputs[0], outputs[0], 0.05);
+                    step++;
+                }
+                Console.WriteLine($"Iteration: {iter} Step: {step} Error: {error}");
             }
         }
 

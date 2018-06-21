@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeuralNetwork
+namespace NeuralNetwork.Loss
 {
     public class CrossEntropyOneHot : ILossFunction
     {

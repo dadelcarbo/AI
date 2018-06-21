@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace NeuralNetwork
+namespace NeuralNetwork.Activation
 {
     public class Softmax : IActivation
     {

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using NeuralNetwork.Activation;
+using NeuralNetwork.Loss;
 
-namespace NeuralNetwork
+namespace NeuralNetwork.Layer
 {
     public class DenseLayer : LayerBase
     {
@@ -48,7 +45,7 @@ namespace NeuralNetwork
             double error = 0;
             for (int i = 0; i < Output.Length; i++)
             {
-                errors[i] = expectedOutput[i] - this.Output[i];
+                errors[i] =  this.Output[i] - expectedOutput[i];
 
                 error += errors[i] * errors[i];
             }
@@ -56,11 +53,11 @@ namespace NeuralNetwork
             // Update weights
             for (var j = 0; j < this.NbOutput; j++)
             {
-                //this.Biases[j] -= errors[j] * learningRate;
+                this.Biases[j] -= errors[j] * learningRate;
 
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] -= errors[j] * learningRate;
+                    this.Weights[i, j] -= errors[j] * learningRate * this.Activation.Derivative(this.Output[i]);
                 }
             }
 

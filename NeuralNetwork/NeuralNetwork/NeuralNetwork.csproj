@@ -40,20 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CrossEntropy.cs" />
-    <Compile Include="CrossEntropyOneHot.cs" />
+    <Compile Include="Loss\CrossEntropy.cs" />
+    <Compile Include="Loss\CrossEntropyOneHot.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="IdentityLayer.cs" />
-    <Compile Include="DenseLayer.cs" />
-    <Compile Include="IActivation.cs" />
-    <Compile Include="ILayer.cs" />
-    <Compile Include="ILossFunction.cs" />
-    <Compile Include="LayerBase.cs" />
+    <Compile Include="Layer\IdentityLayer.cs" />
+    <Compile Include="Layer\DenseLayer.cs" />
+    <Compile Include="Activation\IActivation.cs" />
+    <Compile Include="Layer\ILayer.cs" />
+    <Compile Include="Loss\ILossFunction.cs" />
+    <Compile Include="Layer\LayerBase.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Identity.cs" />
-    <Compile Include="Relu.cs" />
-    <Compile Include="Softmax.cs" />
+    <Compile Include="Activation\Identity.cs" />
+    <Compile Include="Activation\Relu.cs" />
+    <Compile Include="Activation\Softmax.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
