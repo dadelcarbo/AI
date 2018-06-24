@@ -4,9 +4,12 @@ namespace NeuralNetwork.Activation
 {
     public class Relu : IActivation
     {
-        public double[] Activate(double[] input)
+        public void Activate(double[] input, double[] output)
         {
-            return input.Select(x=>x>0 ? x : 0).ToArray();
+            for (var i = 0; i < input.Length; i++)
+            {
+                output[i] = input[i] > 0 ? input[i] : 0;
+            }
         }
 
         public double Derivative(double x)

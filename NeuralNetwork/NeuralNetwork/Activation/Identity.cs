@@ -4,9 +4,12 @@ namespace NeuralNetwork.Activation
 {
     public class IdentityActivation : IActivation
     {
-        public double[] Activate(double[] input)
+        public void Activate(double[] input, double[] output)
         {
-            return input.Select(x=>x).ToArray();
+            for (var i = 0; i < input.Length; i++)
+            {
+                output[i] = input[i];
+            }
         }
 
         public double Derivative(double x)

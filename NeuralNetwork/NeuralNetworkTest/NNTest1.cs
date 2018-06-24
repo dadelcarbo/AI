@@ -21,7 +21,7 @@ namespace NeuralNetworkTest
 
             var nn = new Network(
                 new IdentityLayer(2),
-                new DenseLayer(2, 1, new Relu()));
+                new DenseLayer(2, 1, new Relu(), new CrossEntropy()));
 
             for (int i = 0; i < inputs.Length; i++)
             {
@@ -49,7 +49,7 @@ namespace NeuralNetworkTest
             double[][] inputs = new double[][] { new double[] { 0, 1 , 0, 1} };
             double[][] outputs = new double[][] { new double[] { 0, 1, 0 } };
 
-            var layer = new DenseLayer(inputs[0].Length, outputs[0].Length, new Relu());
+            var layer = new DenseLayer(inputs[0].Length, outputs[0].Length, new Relu(), new Distance());
 
             for (int iter = 0; iter < 20; iter++)
             {

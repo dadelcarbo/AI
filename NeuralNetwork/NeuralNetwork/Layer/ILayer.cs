@@ -1,4 +1,7 @@
-﻿namespace NeuralNetwork.Layer
+﻿using NeuralNetwork.Activation;
+using NeuralNetwork.Loss;
+
+namespace NeuralNetwork.Layer
 {
     public interface ILayer
     {
@@ -12,5 +15,8 @@
         double Train(double[] input, double[] output, double errorRate);
 
         void Initialize();
+
+        IActivation Activation { get; }
+        ILossFunction LossFunction { get; }
     }
 }

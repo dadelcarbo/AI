@@ -2,6 +2,6 @@
 {
     public interface ILossFunction
     {
-        double Evaluate(double[] actual, double[] expected);
+        double Evaluate(double[] actual, double[] expected, double[] errors);
     }
 }

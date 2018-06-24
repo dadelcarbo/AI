@@ -8,7 +8,7 @@ namespace NeuralNetwork.Layer
     {
         private static readonly Random rnd = new Random();
 
-        public DenseLayer(int nbInput, int nbOutput, IActivation activation) : base(nbInput, nbOutput, activation)
+        public DenseLayer(int nbInput, int nbOutput, IActivation activation, ILossFunction lossFunction) : base(nbInput, nbOutput, activation, lossFunction)
         {
             this.Weights = new double[nbInput, nbOutput];
             this.Biases = new double[nbOutput];
@@ -19,19 +19,17 @@ namespace NeuralNetwork.Layer
 
         public double[,] Weights { get; private set; }
         public double[] Biases { get; private set; }
-
-        public override void Evaluate(double[] input)
+        
+        protected override void EvaluateNonActivated(double[] input)
         {
-            if (input.Length != this.NbInput) throw new ArgumentException($"Expected input of length {this.NbInput}, but input was of length {input.Length}");
-
             this.Input = input;
 
             for (var j = 0; j < this.NbOutput; j++)
             {
-                this.Output[j] = this.Biases[j];
+                this.NonActivatedOutput[j] = this.Biases[j];
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Output[j] += this.Weights[i, j] * this.Input[i];
+                    this.NonActivatedOutput[j] += this.Weights[i, j] * this.Input[i];
                 }
             }
         }

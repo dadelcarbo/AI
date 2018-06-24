@@ -2,7 +2,7 @@
 {
     public interface IActivation
     {
-        double[] Activate(double[] input);
+        void Activate(double[] input, double [] output);
 
         double Derivative(double x);
         double[] Derivative(double[] x);

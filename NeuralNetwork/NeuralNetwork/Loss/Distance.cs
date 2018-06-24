@@ -2,24 +2,21 @@
 
 namespace NeuralNetwork.Loss
 {
-    public class CrossEntropyOneHot : ILossFunction
+    public class Distance : ILossFunction
     {
         public double Evaluate(double[] actual, double[] expected, double[] errors)
         {
             if (actual.Length != expected.Length) throw new ArgumentException("Input arrays have different size");
-            double crossEntropy = 0;
+            
+            double sum = 0;
             for (int i = 0; i < expected.Length; i++)
             {
-                if (expected[i] != 0)
-                {
-                    errors[i] = crossEntropy = -Math.Log(actual[i]);
-                }
-                else
-                {
-                    errors[i] = 0;
-                }
+                var diff = expected[i] - actual[i];
+                errors[i] = diff;
+                sum += diff*diff;
             }
-            return crossEntropy;
+
+            return Math.Sqrt(sum);
         }
     }
 }
