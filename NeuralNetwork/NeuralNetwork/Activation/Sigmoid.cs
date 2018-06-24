@@ -29,7 +29,7 @@ namespace NeuralNetwork.Activation
     /// <img src="img/neuro/sigmoid.bmp" width="242" height="172" />
     /// </remarks>
     /// 
-    public class SigmoidFunction : IActivation
+    public class Sigmoid : IActivation
     {
         // sigmoid's alpha value
         private double alpha = 2;
@@ -53,17 +53,17 @@ namespace NeuralNetwork.Activation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SigmoidFunction"/> class.
+        /// Initializes a new instance of the <see cref="Sigmoid"/> class.
         /// </summary>
-        public SigmoidFunction() { }
+        public Sigmoid() { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SigmoidFunction"/> class.
+        /// Initializes a new instance of the <see cref="Sigmoid"/> class.
         /// </summary>
         /// 
         /// <param name="alpha">Sigmoid's alpha value.</param>
         /// 
-        public SigmoidFunction(double alpha)
+        public Sigmoid(double alpha)
         {
             this.alpha = alpha;
         }

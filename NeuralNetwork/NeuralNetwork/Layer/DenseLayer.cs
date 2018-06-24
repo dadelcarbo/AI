@@ -20,7 +20,7 @@ namespace NeuralNetwork.Layer
 
         public double[,] Weights { get; private set; }
         public double[] Biases { get; private set; }
-        
+
         protected override void EvaluateNonActivated(double[] input)
         {
             this.Input = input;
@@ -45,23 +45,22 @@ namespace NeuralNetwork.Layer
             double error = 0;
             for (int i = 0; i < Output.Length; i++)
             {
-                errors[i] =  this.Output[i] - expectedOutput[i];
+                errors[i] = this.Output[i] - expectedOutput[i];
 
                 error += errors[i] * errors[i];
             }
 
             // Update weights
+            derivatives = this.Activation.Derivative(this.Output);
             for (var j = 0; j < this.NbOutput; j++)
             {
                 this.Biases[j] -= errors[j] * learningRate;
 
-                derivatives = this.Activation.Derivative(this.Output);
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] -= errors[j] * learningRate * derivatives[i];
+                    this.Weights[i, j] -= errors[j] * learningRate * derivatives[j];
                 }
             }
-
             return error;
         }
 
