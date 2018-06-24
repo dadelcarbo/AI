@@ -4,7 +4,7 @@ namespace NeuralNetwork.Loss
 {
     public class CrossEntropy : ILossFunction
     {
-        public double Evaluate(double[] actual, double[] expected)
+        public double Evaluate(double[] actual, double[] expected, double[] errors)
         {
             if (actual.Length != expected.Length) throw new ArgumentException("Input arrays have different size");
             double crossEntropy = 0;

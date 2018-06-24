@@ -14,6 +14,7 @@ namespace NeuralNetwork.Layer
             this.Biases = new double[nbOutput];
 
             errors = new double[nbOutput];
+            derivatives = new double[nbOutput];
         }
 
 
@@ -35,6 +36,7 @@ namespace NeuralNetwork.Layer
         }
 
         private double[] errors;
+        private double[] derivatives;
         public override double Train(double[] input, double[] expectedOutput, double learningRate)
         {
             this.Evaluate(input);
@@ -53,9 +55,10 @@ namespace NeuralNetwork.Layer
             {
                 this.Biases[j] -= errors[j] * learningRate;
 
+                derivatives = this.Activation.Derivative(this.Output);
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] -= errors[j] * learningRate * this.Activation.Derivative(this.Output[i]);
+                    this.Weights[i, j] -= errors[j] * learningRate * derivatives[i];
                 }
             }
 
