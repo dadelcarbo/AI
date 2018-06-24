@@ -6,14 +6,14 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid DataContext="{Binding Source={x:Static local:ViewModel.Current}}">
         <StackPanel Orientation="Horizontal">
-            <DataGrid ItemsSource="{Binding Input}" Width="60"></DataGrid>
-            <DataGrid ItemsSource="{Binding Weights}" Width="60"></DataGrid>
-            <DataGrid ItemsSource="{Binding ActualOutput}" Width="60"></DataGrid>
-            <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="60"></DataGrid>
-            <StackPanel>
-                <ComboBox ItemsSource="{Binding Activations}"></ComboBox>
+            <DataGrid ItemsSource="{Binding Input}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
+            <DataGrid ItemsSource="{Binding Weights}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
+            <DataGrid ItemsSource="{Binding ActualOutput}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
+            <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
+            <StackPanel Margin="2">
+                <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="Activation"  Margin="2"></ComboBox>
             </StackPanel>
         </StackPanel>
     </Grid>

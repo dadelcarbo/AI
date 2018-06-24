@@ -10,6 +10,26 @@ namespace WpfApp1
 {
     public class ViewModel : INotifyPropertyChanged
     {
+        public ViewModel()
+        {
+            this.Input = new double[10];
+            this.ActualOutput = new double[5];
+            this.ExpectedOutput = new double[5];
+            this.Weights = new double[5];
+
+
+
+        }
+        static ViewModel current;
+        public static ViewModel Current
+        {
+            get
+            {
+                if (current == null) current = new ViewModel();
+                return current;
+            }
+        }
+
         double[] input;
         public double[] Input { get { return input; } set { input = value; NotifyPropertyChanged("Input"); } }
 
@@ -39,6 +59,13 @@ namespace WpfApp1
                 }
                 return activations;
             }
+        }
+
+        private IActivation activation;
+        public IActivation Activation
+        {
+            get { return activation; }
+            set { if (activation != value) { activation = value; NotifyPropertyChanged("Activation"); } }
         }
 
         #region INotifyPropertyChanged

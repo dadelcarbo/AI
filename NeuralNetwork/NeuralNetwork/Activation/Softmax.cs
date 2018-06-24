@@ -5,6 +5,7 @@ namespace NeuralNetwork.Activation
 {
     public class Softmax : IActivation
     {
+        public string Name => "Softmax";
         public void Activate(double[] input, double[] output)
         {
             var e = input.Select(Math.Exp).ToArray();

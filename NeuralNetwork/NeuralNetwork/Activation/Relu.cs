@@ -4,6 +4,7 @@ namespace NeuralNetwork.Activation
 {
     public class Relu : IActivation
     {
+        public string Name => "Relu";
         public void Activate(double[] input, double[] output)
         {
             for (var i = 0; i < input.Length; i++)

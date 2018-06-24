@@ -31,6 +31,7 @@ namespace NeuralNetwork.Activation
     /// 
     public class Sigmoid : IActivation
     {
+        public string Name => "Sigmoid";
         // sigmoid's alpha value
         private double alpha = 2;
 
