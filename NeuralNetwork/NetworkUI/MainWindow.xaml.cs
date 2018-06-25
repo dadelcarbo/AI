@@ -24,5 +24,15 @@ namespace WpfApp1
         {
             InitializeComponent();
         }
+
+        private void CalculateButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Current.Calculate();
+        }
+
+        private void TrainButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Current.Train();
+        }
     }
 }

@@ -7,13 +7,18 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid DataContext="{Binding Source={x:Static local:ViewModel.Current}}">
+        <TextBlock Text="{Binding OutputLog}" Background="LightGray" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="100"></TextBlock>
         <StackPanel Orientation="Horizontal">
             <DataGrid ItemsSource="{Binding Input}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
-            <DataGrid ItemsSource="{Binding Weights}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
             <DataGrid ItemsSource="{Binding ActualOutput}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
             <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="60" VerticalAlignment="Center" Margin="2"></DataGrid>
             <StackPanel Margin="2">
-                <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="Activation"  Margin="2"></ComboBox>
+                <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="{Binding Activation, Mode=TwoWay}" Width="80"  Margin="2"></ComboBox>
+                <ComboBox ItemsSource="{Binding LossFunctions}" SelectedItem="{Binding LossFunction, Mode=TwoWay}" Width="80"  Margin="2"></ComboBox>
+                <Button Name="CalculateButton" Content="Calculate" Width="80"  Margin="2" Click="CalculateButton_OnClick"/>
+                <Button Name="TrainButton" Content="Train" Width="80"  Margin="2"  Click="TrainButton_OnClick"/>
+            </StackPanel>
+            <StackPanel Margin="2">
             </StackPanel>
         </StackPanel>
     </Grid>

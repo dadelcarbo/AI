@@ -16,7 +16,7 @@ namespace NeuralNetwork.Layer
 
         void Initialize();
 
-        IActivation Activation { get; }
-        ILossFunction LossFunction { get; }
+        IActivation Activation { get; set; }
+        ILossFunction LossFunction { get; set; }
     }
 }

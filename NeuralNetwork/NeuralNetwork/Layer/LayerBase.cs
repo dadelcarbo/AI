@@ -17,9 +17,9 @@ namespace NeuralNetwork.Layer
 
         protected double[] NonActivatedOutput { get; private set; }
 
-        public IActivation Activation { get; private set; }
+        public IActivation Activation { get; set; }
 
-        public ILossFunction LossFunction { get; private set; }
+        public ILossFunction LossFunction { get; set; }
         
         public LayerBase(int nbInput, int nbOutput, IActivation activation, ILossFunction lossFunction)
         {

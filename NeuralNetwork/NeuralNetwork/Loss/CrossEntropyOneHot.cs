@@ -4,6 +4,7 @@ namespace NeuralNetwork.Loss
 {
     public class CrossEntropyOneHot : ILossFunction
     {
+        public string Name => "CrossEntropyOneHot";
         public double Evaluate(double[] actual, double[] expected, double[] errors)
         {
             if (actual.Length != expected.Length) throw new ArgumentException("Input arrays have different size");

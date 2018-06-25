@@ -17,7 +17,6 @@ namespace NeuralNetwork.Layer
             derivatives = new double[nbOutput];
         }
 
-
         public double[,] Weights { get; private set; }
         public double[] Biases { get; private set; }
 
