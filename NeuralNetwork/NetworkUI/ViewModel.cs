@@ -3,10 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows.Media;
 using NeuralNetwork;
 using NeuralNetwork.Layer;
 using NeuralNetwork.Loss;
@@ -27,19 +23,22 @@ namespace WpfApp1
             this.Layer = new DenseLayer(5, 7, Activations.First(), LossFunctions.First());
             this.Layer.Initialize();
 
-            this.Input = (new double[this.Layer.NbInput]).Select(x => new DoubleViewModel() { Data = (int)(rnd.NextDouble() * 1000) });
+            this.Input = (new double[this.Layer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
 
-            this.Layer.Evaluate(this.Input.Select(x => (double)x.Data).ToArray());
+            this.Layer.Evaluate(this.Input);
 
             this.ActualOutput = this.Layer.Output;
-            this.ExpectedOutput = new double[this.Layer.NbOutput];
+            this.ExpectedOutput = Utils.OneHot(this.Layer.NbOutput, rnd.Next(0, this.Layer.NbOutput - 1));
+
+            this.targetError = 0.001;
+            this.learnRate = 0.01;
         }
 
         static ViewModel current;
         public static ViewModel Current => current ?? (current = new ViewModel());
 
-        IEnumerable<DoubleViewModel> input;
-        public IEnumerable<DoubleViewModel> Input { get { return input; } set { input = value; NotifyPropertyChanged("Input"); } }
+        double[] input;
+        public double[] Input { get { return input; } set { input = value; NotifyPropertyChanged("Input"); } }
 
         double[] weights;
         public double[] Weights { get { return weights; } set { weights = value; NotifyPropertyChanged("Weights"); } }
@@ -49,7 +48,6 @@ namespace WpfApp1
 
         double[] expectedOutput;
         public double[] ExpectedOutput { get { return expectedOutput; } set { expectedOutput = value; NotifyPropertyChanged("ExpectedOutput"); } }
-
 
         static private List<IActivation> activations;
         static public List<IActivation> Activations => activations ?? (activations = new List<IActivation>()
@@ -80,15 +78,42 @@ namespace WpfApp1
             set { if (this.Layer.LossFunction != value) { this.Layer.LossFunction = value; NotifyPropertyChanged("LossFunction"); } }
         }
 
+        private double learnRate;
+        public double LearnRate { get { return learnRate; } set { if (value != learnRate) { learnRate = value; NotifyPropertyChanged("LearnRate"); } } }
+
+        private int step;
+        public int Step { get { return step; } set { if (value != step) { step = value; NotifyPropertyChanged("Step"); } } }
+
+        private double error;
+        public double Error { get { return error; } set { if (value != error) { error = value; NotifyPropertyChanged("Error"); } } }
+
+        private double targetError;
+        public double TargetError { get { return targetError; } set { if (value != targetError) { targetError = value; NotifyPropertyChanged("TargetError"); } } }
+
         public void Calculate()
         {
-            this.Layer.Evaluate(this.Input.Select(x => (double)x.Data).ToArray());
+            this.Layer.Evaluate(this.Input);
+
+            this.ActualOutput = null;
             this.ActualOutput = this.Layer.Output;
         }
-
         public void Train()
         {
-            this.Layer.Train(this.Input.Select(x => (double)x.Data).ToArray(), this.ExpectedOutput, 0.01);
+            this.Step = 0;
+            this.Error = 0;
+            do
+            {
+                this.Error = this.Layer.Train(this.Input, this.ExpectedOutput, this.LearnRate);
+            } while (this.error > this.targetError && ++this.Step < 10000);
+
+            this.ActualOutput = null;
+            this.ActualOutput = this.Layer.Output;
+        }
+        public void Initialize()
+        {
+            this.Layer.Initialize();
+            this.Input = (new double[this.Layer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
+            this.ExpectedOutput = Utils.OneHot(this.Layer.NbOutput, rnd.Next(0, this.Layer.NbOutput - 1));
         }
 
         #region INotifyPropertyChanged

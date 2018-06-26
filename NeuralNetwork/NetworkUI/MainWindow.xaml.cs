@@ -34,5 +34,10 @@ namespace WpfApp1
         {
             ViewModel.Current.Train();
         }
+
+        private void InitializeButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Current.Initialize();
+        }
     }
 }

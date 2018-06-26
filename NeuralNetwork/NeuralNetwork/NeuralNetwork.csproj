@@ -56,6 +56,7 @@
     <Compile Include="Activation\Identity.cs" />
     <Compile Include="Activation\Relu.cs" />
     <Compile Include="Activation\Softmax.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
