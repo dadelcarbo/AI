@@ -39,5 +39,10 @@ namespace WpfApp1
         {
             ViewModel.Current.Initialize();
         }
+
+        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            (e.Column as DataGridTextColumn).Binding.StringFormat = "{0:F3}";
+        }
     }
 }

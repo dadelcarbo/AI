@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="500">
+        Title="MainWindow" Height="450" Width="900">
     <Window.Resources>
     </Window.Resources>
     <Grid DataContext="{Binding Source={x:Static local:ViewModel.Current}}">
@@ -14,28 +14,38 @@
             <StackPanel VerticalAlignment="Center" >
                 <DataGrid ItemsSource="{Binding Input}" Width="80" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Input" Binding="{Binding ., Mode=OneWay, StringFormat=\{0:F4\}}" Width="*" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Input" Binding="{Binding ., Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
+            <DataGrid ItemsSource="{Binding Weights}" Width="150" VerticalAlignment="Center" Margin="2" 
+                      AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                      CanUserAddRows="False" CanUserSortColumns="False">
+                
+            </DataGrid>
             <DataGrid ItemsSource="{Binding ActualOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Actual&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F4\}}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Actual&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
             <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Expected&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F4\}}" />
+                    <DataGridTextColumn Header="Expected&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid ItemsSource="{Binding Errors}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Errors" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
                 </DataGrid.Columns>
             </DataGrid>
             <StackPanel Margin="2">
                 <StackPanel Orientation="Horizontal">
                     <Label Width="85">Activation</Label>
-                    <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="{Binding Activation, Mode=TwoWay}" Width="80"  Margin="2"></ComboBox>
+                    <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="{Binding Activation, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Label Width="85">Loss Function</Label>
-                    <ComboBox ItemsSource="{Binding LossFunctions}" SelectedItem="{Binding LossFunction, Mode=TwoWay}" Width="80"  Margin="2"></ComboBox>
+                    <ComboBox ItemsSource="{Binding LossFunctions}" DisplayMemberPath="Name" SelectedItem="{Binding LossFunction, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
                 </StackPanel>
                 <GroupBox Header="Calculate">
                     <StackPanel Margin="2" Orientation="Horizontal">

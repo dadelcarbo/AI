@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Remoting;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Loss;
@@ -15,6 +16,8 @@ namespace NeuralNetwork.Layer
 
         public double[] Output { get; private set; }
 
+        public double[,] Weights { get; private set; }
+
         protected double[] NonActivatedOutput { get; private set; }
 
         public IActivation Activation { get; set; }
@@ -26,6 +29,7 @@ namespace NeuralNetwork.Layer
             this.NbOutput = nbOutput;
             this.NbInput = nbInput;
             this.Output = new double[nbOutput];
+            this.Weights = new double[nbInput, nbOutput];
             this.NonActivatedOutput = new double[nbOutput];
             this.Activation = activation;
             this.LossFunction = lossFunction;
@@ -53,8 +57,8 @@ namespace NeuralNetwork.Layer
             }
         }
 
-        public abstract double Train(double[] input, double[] output, double errorRate);
-
+        public abstract double Train(double[] input, double[] expectedOutput, double learningRate);
+        public abstract double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate);
         public abstract void Initialize();
     }
 }

@@ -6,6 +6,8 @@ using System.Linq;
 using NeuralNetwork;
 using NeuralNetwork.Layer;
 using NeuralNetwork.Loss;
+using System.Collections;
+using System.Data;
 
 namespace WpfApp1
 {
@@ -20,17 +22,17 @@ namespace WpfApp1
         {
             //   this.Network = new Network(new IdentityLayer(5), new DenseLayer(5, 2, new IdentityActivation(), new CrossEntropy()));
 
-            this.Layer = new DenseLayer(5, 7, Activations.First(), LossFunctions.First());
+            this.Layer = new DenseLayer(4, 3, Activations.First(), LossFunctions.First());
             this.Layer.Initialize();
 
             this.Input = (new double[this.Layer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
-
-            this.Layer.Evaluate(this.Input);
-
-            this.ActualOutput = this.Layer.Output;
             this.ExpectedOutput = Utils.OneHot(this.Layer.NbOutput, rnd.Next(0, this.Layer.NbOutput - 1));
+            this.Weights = this.Layer.Weights.ToDataTable();
+            this.errors = new double[this.Layer.NbOutput];
 
-            this.targetError = 0.001;
+            this.Calculate();
+
+            this.targetError = 0.01;
             this.learnRate = 0.01;
         }
 
@@ -40,14 +42,17 @@ namespace WpfApp1
         double[] input;
         public double[] Input { get { return input; } set { input = value; NotifyPropertyChanged("Input"); } }
 
-        double[] weights;
-        public double[] Weights { get { return weights; } set { weights = value; NotifyPropertyChanged("Weights"); } }
+        DataTable weights;
+        public DataTable Weights { get { return weights; } set { weights = value; NotifyPropertyChanged("Weights"); } }
 
         double[] actualOutput;
         public double[] ActualOutput { get { return actualOutput; } set { actualOutput = value; NotifyPropertyChanged("ActualOutput"); } }
 
         double[] expectedOutput;
         public double[] ExpectedOutput { get { return expectedOutput; } set { expectedOutput = value; NotifyPropertyChanged("ExpectedOutput"); } }
+
+        private double[] errors;
+        public double[] Errors { get { return errors; } set { errors = value; NotifyPropertyChanged("Errors"); } }
 
         static private List<IActivation> activations;
         static public List<IActivation> Activations => activations ?? (activations = new List<IActivation>()
@@ -96,24 +101,35 @@ namespace WpfApp1
 
             this.ActualOutput = null;
             this.ActualOutput = this.Layer.Output;
+
+            double[] err = this.errors;
+            this.Errors = null;
+            this.Layer.LossFunction.Evaluate(this.Layer.Output, this.ExpectedOutput, err);
+            this.Errors = err;
         }
         public void Train()
         {
-            this.Step = 0;
+            //this.Step = 0;
             this.Error = 0;
-            do
-            {
-                this.Error = this.Layer.Train(this.Input, this.ExpectedOutput, this.LearnRate);
-            } while (this.error > this.targetError && ++this.Step < 10000);
+            //do
+            //{
+            this.Error = this.Layer.Train(this.Input, this.ExpectedOutput, this.LearnRate);
+            ++this.Step;
+            //} while (this.error > this.targetError && this.Step < 1000);
+            
+            this.Weights = null;
+            this.Weights = this.Layer.Weights.ToDataTable();
 
-            this.ActualOutput = null;
-            this.ActualOutput = this.Layer.Output;
+            this.Calculate();
         }
         public void Initialize()
         {
             this.Layer.Initialize();
             this.Input = (new double[this.Layer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
             this.ExpectedOutput = Utils.OneHot(this.Layer.NbOutput, rnd.Next(0, this.Layer.NbOutput - 1));
+            this.Weights = null;
+            this.Weights = this.Layer.Weights.ToDataTable();
+            this.Calculate();
         }
 
         #region INotifyPropertyChanged

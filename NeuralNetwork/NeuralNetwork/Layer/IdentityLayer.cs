@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NeuralNetwork.Activation;
 
 namespace NeuralNetwork.Layer
@@ -20,7 +21,12 @@ namespace NeuralNetwork.Layer
             }
         }
 
-        public override double Train(double[] input, double[] output, double errorRate)
+        public override double Train(double[] input, double[] output, double learningRate)
+        {
+            return 0.0;
+        }
+
+        public override double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate)
         {
             return 0.0;
         }

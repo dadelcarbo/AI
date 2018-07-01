@@ -12,7 +12,7 @@ namespace NeuralNetwork.Loss
             double sum = 0;
             for (int i = 0; i < expected.Length; i++)
             {
-                var diff = expected[i] - actual[i];
+                var diff = expected[i]- actual[i];
                 errors[i] = diff;
                 sum += diff*diff;
             }
