@@ -50,6 +50,18 @@ namespace NeuralNetwork
             }
 
             this.OutputLayer.Initialize();
+
+            this.isInitialized = true;
         }
+
+        public double Train(double[] input, double[] expectedOutput, double learningRate, double error, int maxSteps)
+        {
+            return 0;
+        }
+        public double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate, double error, int maxSteps)
+        {
+            return 0;
+        }
+        
     }
 }

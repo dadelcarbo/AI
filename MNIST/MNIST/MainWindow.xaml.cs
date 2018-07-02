@@ -1,55 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using TensorFlow;
 
 namespace MNIST
 {
-    public class ViewModel : INotifyPropertyChanged
-    {
-
-        public List<Image> Images { get; set; } = new List<Image>();
-
-        private Image image;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public Image Image
-        {
-            get { return image; }
-            set
-            {
-                if (image != value)
-                {
-                    image = value;
-                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Image"));
-                }
-            }
-        }
-    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        ViewModel vm;
         public MainWindow()
         {
             InitializeComponent();
 
-            ViewModel vm = (ViewModel)this.Resources["ViewModel"];
+            vm = (ViewModel)this.Resources["ViewModel"];
             this.DataContext = vm;
             int i = 0;
             foreach (var item in MnistReader.Read(MnistReader.TrainImages, MnistReader.TrainLabels))
@@ -62,7 +29,17 @@ namespace MNIST
 
             vm.Image = vm.Images.First();
 
-            
+
+        }
+
+        private void EvaluateButton_Click(object sender, RoutedEventArgs e)
+        {
+            vm.Evaluate();
+        }
+
+        private void TrainButton_Click(object sender, RoutedEventArgs e)
+        {
+            vm.Train();
         }
     }
     public static class MnistReader
@@ -113,7 +90,7 @@ namespace MNIST
                 {
                     Data = arr,
                     Label = labels.ReadByte(),
-                    Bitmap = Image.FromArray(bytes.Select(b=>(byte)(255-b)).ToArray())
+                    Bitmap = Image.FromArray(bytes.Select(b => (byte)(255 - b)).ToArray())
                 };
             }
         }

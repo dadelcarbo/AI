@@ -9,8 +9,21 @@
     <Window.Resources>
         <local:ViewModel x:Key="ViewModel"></local:ViewModel>
     </Window.Resources>
-    <StackPanel DataContext="{Binding Mode=OneWay, Source={StaticResource ViewModel}}">
-        <ComboBox ItemsSource="{Binding Images}" DisplayMemberPath="Name" SelectedItem="{Binding Image}" Width="100" HorizontalAlignment="Right"/>
-        <Image Name="imageCtrl" Source="{Binding Image.Bitmap}" Width="104" Height="104" Stretch="Fill"/>
+    <StackPanel Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={StaticResource ViewModel}}">
+        <StackPanel >
+            <ComboBox ItemsSource="{Binding Images}" DisplayMemberPath="Name" SelectedItem="{Binding Image}" Width="100" HorizontalAlignment="Right"/>
+            <Image Name="imageCtrl" Source="{Binding Image.Bitmap}" Width="104" Height="104" Stretch="Fill"/>
+        </StackPanel>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal"> 
+                <Button Name="EvaluateButton" Click="EvaluateButton_Click" Margin="2">Evaluate</Button>
+                <Button Name="TrainButton" Click="TrainButton_Click" Margin="2">Train</Button>
+            </StackPanel>
+            <DataGrid ItemsSource="{Binding Output}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Actual&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
     </StackPanel>
 </Window>

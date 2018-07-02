@@ -23,6 +23,26 @@ namespace MNIST
         public string Name { get { return Id + "-" + Label; } }
         public byte Label { get; set; }
         public byte[,] Data { get; set; }
+
+        double[] values;
+        public double[] Values
+        {
+            get
+            {
+                if (values == null)
+                {
+                    values = new double[Data.GetLength(0) * Data.GetLength(1)];
+                    for (int i = 0; i < Data.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < Data.GetLength(1); j++)
+                        {
+                            values[i * Data.GetLength(0) + j] = Data[i,j];
+                        }
+                    }
+                }
+                return values;
+            }
+        }
         public BitmapSource Bitmap { get; set; }
 
         public static BitmapSource FromArray(byte[] data, int w = 28, int h = 28)
