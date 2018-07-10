@@ -25,6 +25,11 @@ namespace NeuralNetwork
 
         private bool isInitialized = false;
 
+        public void AddLayer(ILayer layer)
+        {
+            this.HiddenLayers.Add(layer);
+        }
+
         public void Evaluate(double[] inputData)
         {
             if (!isInitialized)
@@ -41,7 +46,7 @@ namespace NeuralNetwork
             this.OutputLayer.Evaluate(output);
         }
 
-        private void Initialize()
+        public void Initialize()
         {
             this.InputLayer.Initialize();
             foreach (var hiddenLayer in this.HiddenLayers)

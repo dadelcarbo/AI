@@ -8,73 +8,152 @@
         Title="MainWindow" Height="450" Width="900">
     <Window.Resources>
     </Window.Resources>
-    <Grid DataContext="{Binding Source={x:Static local:ViewModel.Current}}">
-        <TextBlock Text="{Binding OutputLog}" Background="LightGray" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="100"></TextBlock>
-        <StackPanel Orientation="Horizontal">
-            <StackPanel VerticalAlignment="Center" >
-                <DataGrid ItemsSource="{Binding Input}" Width="80" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Input" Binding="{Binding ., Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </StackPanel>
-            <DataGrid ItemsSource="{Binding Weights}" Width="150" VerticalAlignment="Center" Margin="2" 
+    <TabControl>
+        <TabItem Header="Network">
+            <Grid DataContext="{Binding Source={x:Static local:NetworkViewModel.Current}}">
+                <TextBlock Text="{Binding OutputLog}" Background="LightGray" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="100"></TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center" >
+                        <DataGrid ItemsSource="{Binding Input}" Width="80" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Input" Binding="{Binding ., Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding Weights1}" Width="150" VerticalAlignment="Center" Margin="2" 
                       AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
                       CanUserAddRows="False" CanUserSortColumns="False">
-                
-            </DataGrid>
-            <DataGrid ItemsSource="{Binding ActualOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Actual&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Expected&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <DataGrid ItemsSource="{Binding Errors}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Errors" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <StackPanel Margin="2">
-                <StackPanel Orientation="Horizontal">
-                    <Label Width="85">Activation</Label>
-                    <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="{Binding Activation, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Width="85">Loss Function</Label>
-                    <ComboBox ItemsSource="{Binding LossFunctions}" DisplayMemberPath="Name" SelectedItem="{Binding LossFunction, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
-                </StackPanel>
-                <GroupBox Header="Calculate">
-                    <StackPanel Margin="2" Orientation="Horizontal">
-                        <Button Name="CalculateButton" Content="Calculate" Width="80"  Margin="2" Click="CalculateButton_OnClick"/>
-                        <Button Name="GenerateButton" Content="Intialize" Width="80"  Margin="2" Click="InitializeButton_OnClick"/>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox Header="Train">
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding Weights2}" Width="150" VerticalAlignment="Center" Margin="2" 
+                      AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                      CanUserAddRows="False" CanUserSortColumns="False">
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding ActualOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Actual&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Expected&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding Errors}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Errors" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                     <StackPanel Margin="2">
                         <StackPanel Orientation="Horizontal">
-                            <Label Width="80">Learn Rate</Label>
-                            <TextBox Text="{Binding LearnRate, Mode=TwoWay}" Width="50"/>
-                        </StackPanel>
-                        <Button Name="TrainButton" Content="Train" Width="80"  Margin="2"  Click="TrainButton_OnClick"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Width="80">Step</Label>
-                            <TextBox Text="{Binding Step}" Width="50"/>
+                            <Label Width="85">Activation</Label>
+                            <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="{Binding Activation, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Width="80">Error</Label>
-                            <TextBox Text="{Binding Error}" Width="50"/>
+                            <Label Width="85">Loss Function</Label>
+                            <ComboBox ItemsSource="{Binding LossFunctions}" DisplayMemberPath="Name" SelectedItem="{Binding LossFunction, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Width="80">Target Error</Label>
-                            <TextBox Text="{Binding TargetError, Mode=TwoWay}" Width="50"/>
-                        </StackPanel>
+                        <GroupBox Header="Calculate">
+                            <StackPanel Margin="2" Orientation="Horizontal">
+                                <Button Content="Calculate" Width="80"  Margin="2" Click="NetworkCalculateButton_OnClick"/>
+                                <Button Content="Intialize" Width="80"  Margin="2" Click="NetworkInitializeButton_OnClick"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Train">
+                            <StackPanel Margin="2">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Learn Rate</Label>
+                                    <TextBox Text="{Binding LearnRate, Mode=TwoWay}" Width="50"/>
+                                </StackPanel>
+                                <Button Name="TrainButton" Content="Train" Width="80"  Margin="2"  Click="NetworkTrainButton_OnClick"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Step</Label>
+                                    <TextBox Text="{Binding Step}" Width="50"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Error</Label>
+                                    <TextBox Text="{Binding Error}" Width="50"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Target Error</Label>
+                                    <TextBox Text="{Binding TargetError, Mode=TwoWay}" Width="50"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
                     </StackPanel>
-                </GroupBox>
-            </StackPanel>
-        </StackPanel>
-    </Grid>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Layer">
+            <Grid DataContext="{Binding Source={x:Static local:LayerViewModel.Current}}">
+                <TextBlock Text="{Binding OutputLog}" Background="LightGray" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="100"></TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center" >
+                        <DataGrid ItemsSource="{Binding Input}" Width="80" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Input" Binding="{Binding ., Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding Weights}" Width="150" VerticalAlignment="Center" Margin="2" 
+                      AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                      CanUserAddRows="False" CanUserSortColumns="False">
+
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding ActualOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Actual&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" Width="*" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding ExpectedOutput}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Expected&#x0a;Output" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding Errors}" Width="80" VerticalAlignment="Center" Margin="2" AutoGenerateColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Errors" Binding="{Binding Path=.,Mode=OneWay, StringFormat=\{0:F3\}}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Margin="2">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="85">Activation</Label>
+                            <ComboBox ItemsSource="{Binding Activations}" DisplayMemberPath="Name" SelectedItem="{Binding Activation, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="85">Loss Function</Label>
+                            <ComboBox ItemsSource="{Binding LossFunctions}" DisplayMemberPath="Name" SelectedItem="{Binding LossFunction, Mode=TwoWay}" Width="120"  Margin="2"></ComboBox>
+                        </StackPanel>
+                        <GroupBox Header="Calculate">
+                            <StackPanel Margin="2" Orientation="Horizontal">
+                                <Button Name="CalculateButton" Content="Calculate" Width="80"  Margin="2" Click="LayerCalculateButton_OnClick"/>
+                                <Button Name="GenerateButton" Content="Intialize" Width="80"  Margin="2" Click="LayerInitializeButton_OnClick"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Train">
+                            <StackPanel Margin="2">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Learn Rate</Label>
+                                    <TextBox Text="{Binding LearnRate, Mode=TwoWay}" Width="50"/>
+                                </StackPanel>
+                                <Button Content="Train" Width="80"  Margin="2"  Click="LayerTrainButton_OnClick"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Step</Label>
+                                    <TextBox Text="{Binding Step}" Width="50"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Error</Label>
+                                    <TextBox Text="{Binding Error}" Width="50"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="80">Target Error</Label>
+                                    <TextBox Text="{Binding TargetError, Mode=TwoWay}" Width="50"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+
+    </TabControl>
 </Window>

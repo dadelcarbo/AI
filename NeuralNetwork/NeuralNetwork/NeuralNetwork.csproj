@@ -52,7 +52,9 @@
     <Compile Include="Layer\ILayer.cs" />
     <Compile Include="Loss\ILossFunction.cs" />
     <Compile Include="Layer\LayerBase.cs" />
+    <Compile Include="MathTools\NNMatrix.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="MathTools\NNArray.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Activation\Identity.cs" />
     <Compile Include="Activation\Relu.cs" />

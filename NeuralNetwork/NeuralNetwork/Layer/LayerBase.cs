@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Remoting;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Loss;
+using NeuralNetwork.MathTools;
 
 namespace NeuralNetwork.Layer
 {
@@ -16,9 +17,9 @@ namespace NeuralNetwork.Layer
 
         public double[] Output { get; private set; }
 
-        public double[,] Weights { get; private set; }
+        public NNMatrix Weights { get; private set; }
 
-        protected double[] NonActivatedOutput { get; private set; }
+        public double[] NonActivatedOutput { get; protected set; }
 
         public IActivation Activation { get; set; }
 
@@ -29,7 +30,7 @@ namespace NeuralNetwork.Layer
             this.NbOutput = nbOutput;
             this.NbInput = nbInput;
             this.Output = new double[nbOutput];
-            this.Weights = new double[nbInput, nbOutput];
+            this.Weights = new NNMatrix(nbInput, nbOutput);
             this.NonActivatedOutput = new double[nbOutput];
             this.Activation = activation;
             this.LossFunction = lossFunction;

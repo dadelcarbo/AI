@@ -6,6 +6,7 @@ using System.Linq;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Layer;
 using NeuralNetwork.Loss;
+using NeuralNetwork.MathTools;
 
 namespace NeuralNetworkTest
 {
@@ -92,6 +93,7 @@ namespace NeuralNetworkTest
 
             Assert.IsTrue(Math.Abs(1 - actualSum) <= 0.00001);
         }
+
         [TestMethod]
         public void CrossEntropyTest()
         {
@@ -120,5 +122,7 @@ namespace NeuralNetworkTest
 
             Assert.AreEqual(entropyOH, entropy);
         }
+
+        
     }
 }

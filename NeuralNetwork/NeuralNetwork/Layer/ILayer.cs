@@ -1,5 +1,6 @@
 ﻿using NeuralNetwork.Activation;
 using NeuralNetwork.Loss;
+using NeuralNetwork.MathTools;
 using System.Collections.Generic;
 
 namespace NeuralNetwork.Layer
@@ -9,7 +10,7 @@ namespace NeuralNetwork.Layer
         int NbInput { get; }
         double[] Input { get; }
         int NbOutput { get; }
-        double[,] Weights { get; }
+        NNMatrix Weights { get; }
         double[] Output { get; }
 
         void Evaluate(double[] input);

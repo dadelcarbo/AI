@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Loss;
+using NeuralNetwork.MathTools;
 
 namespace NeuralNetwork.Layer
 {
@@ -23,20 +24,13 @@ namespace NeuralNetwork.Layer
             weightsError = new double[nbInput, nbOutput];
         }
 
-        public double[] Biases { get; private set; }
+        public NNArray Biases { get; private set; }
 
         protected override void EvaluateNonActivated(double[] input)
         {
             this.Input = input;
 
-            for (var j = 0; j < this.NbOutput; j++)
-            {
-                this.NonActivatedOutput[j] = this.Biases[j];
-                for (var i = 0; i < this.NbInput; i++)
-                {
-                    this.NonActivatedOutput[j] += this.Weights[i, j] * this.Input[i];
-                }
-            }
+            this.NonActivatedOutput = (this.Weights * input) + this.Biases;
         }
 
         private double[] errors;
@@ -75,7 +69,7 @@ namespace NeuralNetwork.Layer
 
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.weightsError[i,j] = 0;
+                    this.weightsError[i, j] = 0;
                 }
             }
 
@@ -89,7 +83,7 @@ namespace NeuralNetwork.Layer
                 // Calculate Error
                 double[] expectedOutput = expectedOutputBatch[k];
                 double err = this.LossFunction.Evaluate(this.Output, expectedOutput, errors);
-                error += err*err;
+                error += err * err;
                 for (var j = 0; j < this.NbOutput; j++)
                 {
                     errors[j] *= learningRate;
@@ -111,7 +105,7 @@ namespace NeuralNetwork.Layer
             // Apply weight changes
             for (var j = 0; j < this.NbOutput; j++)
             {
-                this.Biases[j] +=this.biasesError[j];
+                this.Biases[j] += this.biasesError[j];
 
                 for (var i = 0; i < this.NbInput; i++)
                 {
@@ -120,6 +114,23 @@ namespace NeuralNetwork.Layer
             }
 
             return Math.Sqrt(error);
+        }
+
+        public double BackPropagate(double[] input, double[] expectedOutput, double learningRate, double[] inputError)
+        {
+            this.Evaluate(input);
+
+            // Calculate Error
+            var derivative = this.Activation.Derivative(this.NonActivatedOutput);
+            for (var j = 0; j < this.NbOutput; j++)
+            {
+                errors[j] = derivative[j] * (expectedOutput[j] - this.Output[j]) / this.NbInput;
+            }
+
+            // Calculate InputError
+            this.Weights.Transpose().Multiply(errors, inputError);
+
+            return 0.0;
         }
 
         public override void Initialize()

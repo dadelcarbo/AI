@@ -25,21 +25,35 @@ namespace WpfApp1
             InitializeComponent();
         }
 
-        private void CalculateButton_OnClick(object sender, RoutedEventArgs e)
+        private void LayerCalculateButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.Current.Calculate();
+            LayerViewModel.Current.Calculate();
         }
 
-        private void TrainButton_OnClick(object sender, RoutedEventArgs e)
+        private void LayerTrainButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.Current.Train();
+            LayerViewModel.Current.Train();
         }
 
-        private void InitializeButton_OnClick(object sender, RoutedEventArgs e)
+        private void LayerInitializeButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.Current.Initialize();
+            LayerViewModel.Current.Initialize();
         }
 
+        private void NetworkCalculateButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            NetworkViewModel.Current.Calculate();
+        }
+
+        private void NetworkTrainButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            NetworkViewModel.Current.Train();
+        }
+
+        private void NetworkInitializeButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            NetworkViewModel.Current.Initialize();
+        }
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             (e.Column as DataGridTextColumn).Binding.StringFormat = "{0:F3}";

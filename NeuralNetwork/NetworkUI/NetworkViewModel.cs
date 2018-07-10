@@ -11,24 +11,30 @@ using System.Data;
 
 namespace WpfApp1
 {
-    public class ViewModel : INotifyPropertyChanged
+    public class NetworkViewModel : INotifyPropertyChanged
     {
         Random rnd = new Random();
 
-        // public Network Network { get; set; }
-        public ILayer Layer { get; set; }
+        public Network Network { get; set; }
+        private ILayer Layer1 { get; set; }
+        private ILayer Layer2 { get; set; }
 
-        public ViewModel()
+        public NetworkViewModel()
         {
-            //   this.Network = new Network(new IdentityLayer(5), new DenseLayer(5, 2, new IdentityActivation(), new CrossEntropy()));
+            ILayer layer = new DenseLayer(5, 4, new IdentityActivation(), new CrossEntropy());
 
-            this.Layer = new DenseLayer(4, 3, Activations.First(), LossFunctions.First());
-            this.Layer.Initialize();
+            this.Network = new Network(new IdentityLayer(5), new DenseLayer(4, 2, new IdentityActivation(), new CrossEntropy()));
+            this.Network.AddLayer(layer);
 
-            this.Input = (new double[this.Layer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
-            this.ExpectedOutput = Utils.OneHot(this.Layer.NbOutput, rnd.Next(0, this.Layer.NbOutput - 1));
-            this.Weights = this.Layer.Weights.ToDataTable();
-            this.errors = new double[this.Layer.NbOutput];
+            this.Layer1 = layer;
+            this.Layer2 = this.Network.OutputLayer;
+
+
+
+            this.Input = (new double[this.Network.InputLayer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
+            this.ExpectedOutput = Utils.OneHot(this.Layer2.NbOutput, rnd.Next(0, this.Layer2.NbOutput - 1));
+
+            this.errors = new double[this.Layer2.NbOutput];
 
             this.Calculate();
 
@@ -36,14 +42,14 @@ namespace WpfApp1
             this.learnRate = 0.01;
         }
 
-        static ViewModel current;
-        public static ViewModel Current => current ?? (current = new ViewModel());
+        static NetworkViewModel current;
+        public static NetworkViewModel Current => current ?? (current = new NetworkViewModel());
 
         double[] input;
         public double[] Input { get { return input; } set { input = value; NotifyPropertyChanged("Input"); } }
 
-        DataTable weights;
-        public DataTable Weights { get { return weights; } set { weights = value; NotifyPropertyChanged("Weights"); } }
+        public DataTable Weights1 => this.Layer1.Weights.ToDataTable();
+        public DataTable Weights2 => this.Layer2.Weights.ToDataTable();
 
         double[] actualOutput;
         public double[] ActualOutput { get { return actualOutput; } set { actualOutput = value; NotifyPropertyChanged("ActualOutput"); } }
@@ -65,8 +71,8 @@ namespace WpfApp1
 
         public IActivation Activation
         {
-            get { return this.Layer.Activation; }
-            set { if (this.Layer.Activation != value) { this.Layer.Activation = value; NotifyPropertyChanged("Activation"); } }
+            get { return this.Layer2.Activation; }
+            set { if (this.Layer2.Activation != value) { this.Layer2.Activation = value; NotifyPropertyChanged("Activation"); } }
         }
 
         static private List<ILossFunction> lossFunctions;
@@ -79,8 +85,8 @@ namespace WpfApp1
 
         public ILossFunction LossFunction
         {
-            get { return this.Layer.LossFunction; }
-            set { if (this.Layer.LossFunction != value) { this.Layer.LossFunction = value; NotifyPropertyChanged("LossFunction"); } }
+            get { return this.Layer2.LossFunction; }
+            set { if (this.Layer2.LossFunction != value) { this.Layer2.LossFunction = value; NotifyPropertyChanged("LossFunction"); } }
         }
 
         private double learnRate;
@@ -97,14 +103,15 @@ namespace WpfApp1
 
         public void Calculate()
         {
-            this.Layer.Evaluate(this.Input);
+            this.Network.Evaluate(this.Input);
 
             this.ActualOutput = null;
-            this.ActualOutput = this.Layer.Output;
+            this.ActualOutput = this.Network.OutputLayer.Output;
 
             double[] err = this.errors;
             this.Errors = null;
-            this.Layer.LossFunction.Evaluate(this.Layer.Output, this.ExpectedOutput, err);
+
+            this.Layer2.LossFunction.Evaluate(this.Layer2.Output, this.ExpectedOutput, err);
             this.Errors = err;
         }
         public void Train()
@@ -113,22 +120,25 @@ namespace WpfApp1
             this.Error = 0;
             //do
             //{
-            this.Error = this.Layer.Train(this.Input, this.ExpectedOutput, this.LearnRate);
+            this.Error = this.Network.Train(this.Input, this.ExpectedOutput, this.LearnRate, this.Error, 1000);
             ++this.Step;
             //} while (this.error > this.targetError && this.Step < 1000);
-            
-            this.Weights = null;
-            this.Weights = this.Layer.Weights.ToDataTable();
+
+
+            this.NotifyPropertyChanged("Weights1");
+            this.NotifyPropertyChanged("Weights2");
 
             this.Calculate();
         }
         public void Initialize()
         {
-            this.Layer.Initialize();
-            this.Input = (new double[this.Layer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
-            this.ExpectedOutput = Utils.OneHot(this.Layer.NbOutput, rnd.Next(0, this.Layer.NbOutput - 1));
-            this.Weights = null;
-            this.Weights = this.Layer.Weights.ToDataTable();
+            this.Network.Initialize();
+            this.Input = (new double[this.Network.InputLayer.NbInput]).Select(x => rnd.NextDouble()).ToArray();
+            this.ExpectedOutput = Utils.OneHot(this.Layer2.NbOutput, rnd.Next(0, this.Layer2.NbOutput - 1));
+
+            NotifyPropertyChanged("Weights1");
+            NotifyPropertyChanged("Weights2");
+
             this.Calculate();
         }
 

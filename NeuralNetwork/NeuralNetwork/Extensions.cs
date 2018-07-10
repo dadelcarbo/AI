@@ -63,5 +63,27 @@ namespace NeuralNetwork
 
             return dt;
         }
+
+        public static double[] Add(this double[] a, double[] b)
+        {
+            if (a.Length != b.Length) throw new ArgumentException("Array do not have same length");
+            var res = new double[a.Length];
+            for(int i = 0; i< a.Length;i++)
+            {
+                res[i] = a[i] + b[i];
+            }
+            return res;
+        }
+
+        public static double[] Subst(this double[] a, double[] b)
+        {
+            if (a.Length != b.Length) throw new ArgumentException("Array do not have same length");
+            var res = new double[a.Length];
+            for (int i = 0; i < a.Length; i++)
+            {
+                res[i] = a[i] - b[i];
+            }
+            return res;
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace NeuralNetwork
         }
         static public void OneHot(double[] data, int value)
         {
-            if (value>data.Length-1) throw new ArgumentException("Value exceeds the data size, One Hot cannot be applied");
+            if (value>data.Length) throw new ArgumentException("Value exceeds the data size, One Hot cannot be applied");
             for (int i = 0; i < data.Length; i++)
             {
                 data[i] = i == value ? 1 : 0;
