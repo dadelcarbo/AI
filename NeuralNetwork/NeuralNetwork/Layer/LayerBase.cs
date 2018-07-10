@@ -9,6 +9,7 @@ namespace NeuralNetwork.Layer
 {
     public abstract class LayerBase : ILayer
     {
+        protected static readonly Random rnd = new Random();
         public double[] Input { get; set; }
 
         public int NbInput { get; private set; }
@@ -38,8 +39,6 @@ namespace NeuralNetwork.Layer
 
         public void Evaluate(double[] input)
         {
-            if (input.Length != this.NbInput) throw new ArgumentException($"Expected input of length {this.NbInput}, but input was of length {input.Length}");
-
             this.EvaluateNonActivated(input);
             this.Activate();
         }

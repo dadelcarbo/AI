@@ -41,7 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\Sigmoid.cs" />
+    <Compile Include="Layer\DenseLayerBias.cs" />
+    <Compile Include="Layer\DenseLayerNoBias.cs" />
     <Compile Include="Layer\NormalizedLayer.cs" />
+    <Compile Include="Loss\LossBase.cs" />
+    <Compile Include="Loss\SquaredDistance.cs" />
     <Compile Include="Loss\Distance.cs" />
     <Compile Include="Loss\CrossEntropy.cs" />
     <Compile Include="Loss\CrossEntropyOneHot.cs" />

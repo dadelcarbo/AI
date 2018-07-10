@@ -92,5 +92,66 @@ namespace NeuralNetworkTest
             double bias = layer.Biases[0];
             double coef = layer.Weights[0, 0];
         }
+
+        [TestMethod]
+        public void LinearRegressionNoBiasTest()
+        {
+            // y = ax + b
+            double a = 5.2, b = 0;
+            int count = 6;
+            double[] input = new double[count];
+            double[] expectedOutput = new double[count];
+            for (int i = 1; i < count; i++)
+            {
+                input[i] = i;
+                expectedOutput[i] = a * i + b;
+            }
+
+            var layer = new DenseLayerNoBias(1, 1, new IdentityActivation(), new SquaredDistance());
+            layer.Initialize();
+
+            int epoc = 0;
+            double error = 100;
+            while (++epoc < 1000 && error > 0.001)
+            {
+                for (int i = 1; i < count; i++)
+                {
+                    error = layer.Train(new double[] {input[i]}, new double[] {expectedOutput[i]}, 0.01);
+                }
+            }
+            Assert.IsTrue(epoc < 1000);
+            Assert.IsTrue(Math.Abs(layer.Weights[0, 0]-a) < 0.01);
+        }
+        [TestMethod]
+        public void LinearRegressionNeuronBiasTest()
+        {
+            // y = ax + b
+            double a = 2, b = 3;
+            int count = 20;
+            double[] input = new double[count];
+            double[] expectedOutput = new double[count];
+            for (int i = 1; i < count; i++)
+            {
+                input[i] = i;
+                expectedOutput[i] = a * i + b;
+            }
+
+            var layer = new DenseLayerBias(1, 1, new IdentityActivation(), new SquaredDistance());
+            layer.Initialize();
+            layer.Weights[0, 0] = 2;
+
+            int epoc = 0;
+            double error = 100;
+            while (++epoc < 10000 && error > 0.01)
+            {
+                for (int i = 1; i < count; i++)
+                {
+                    error = layer.Train(new double[] { input[i] }, new double[] { expectedOutput[i] }, 0.1);
+                }
+            }
+
+            double coef = layer.Weights[0, 0];
+        }
+
     }
 }
