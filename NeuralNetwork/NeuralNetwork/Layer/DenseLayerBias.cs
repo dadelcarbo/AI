@@ -8,15 +8,13 @@ namespace NeuralNetwork.Layer
 {
     public class DenseLayerBias : LayerBase
     {
-        private static readonly Random rnd = new Random();
-        
         private double[,] weightsError;
 
-        public DenseLayerBias(int nbInput, int nbOutput, IActivation activation, ILossFunction lossFunction) : base(nbInput+1, nbOutput, activation, lossFunction)
+        public DenseLayerBias(int nbInput, int nbOutput, IActivation activation, ILossFunction lossFunction) : base(nbInput + 1, nbOutput, activation, lossFunction)
         {
             errors = new double[nbOutput];
             derivatives = new double[nbOutput];
-            weightsError = new double[nbInput+1, nbOutput];
+            weightsError = new double[nbInput + 1, nbOutput];
 
             this.Input = new double[nbInput + 1];
             this.Input[nbInput] = 1;
@@ -31,25 +29,42 @@ namespace NeuralNetwork.Layer
 
         private double[] errors;
         private double[] derivatives;
-        public override double Train(double[] input, double[] expectedOutput, double learningRate)
+        //public override double Train(double[] input, double[] expectedOutput, double learningRate)
+        //{
+        //    this.Evaluate(input);
+
+        //    // Calculate Error
+        //    double error = this.LossFunction.Evaluate(this.Output, expectedOutput, errors);
+        //    for (var j = 0; j < this.NbOutput; j++)
+        //    {
+        //        errors[j] *= learningRate;
+        //    }
+
+        //    // Update weights
+        //    derivatives = this.Activation.Derivative(this.Output);
+
+        //    for (var j = 0; j < this.NbOutput; j++)
+        //    {
+        //        for (var i = 0; i < this.NbInput; i++)
+        //        {
+        //            this.Weights[i, j] += errors[j] * derivatives[j] * this.Input[i];
+        //        }
+        //    }
+        //    return error;
+        //}
+        public override double Train(double[] input, double[] expectedOutput, double learningRate, bool calcInputError = false)
         {
             this.Evaluate(input);
 
             // Calculate Error
-            double error = this.LossFunction.Evaluate(this.Output, expectedOutput, errors);
-            for (var j = 0; j < this.NbOutput; j++)
-            {
-                errors[j] *= learningRate;
-            }
+            double error = this.LossFunction.Evaluate(this.Output, this.NonActivatedOutput, expectedOutput, errors, this.Activation);
 
             // Update weights
-            derivatives = this.Activation.Derivative(this.Output);
-            
             for (var j = 0; j < this.NbOutput; j++)
             {
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] += errors[j] * derivatives[j] * this.Input[i];
+                    this.Weights[i, j] += errors[j] * this.Input[i] * learningRate;
                 }
             }
             return error;

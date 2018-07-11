@@ -59,6 +59,15 @@ namespace NeuralNetwork
             this.isInitialized = true;
         }
 
+        public double Train(double[] input, double[] expectedOutput, double learningRate)
+        {
+            this.Evaluate(input);
+
+            this.OutputLayer.Train(input, expectedOutput, learningRate, true);
+
+            return 0;
+        }
+
         public double Train(double[] input, double[] expectedOutput, double learningRate, double error, int maxSteps)
         {
             return 0;

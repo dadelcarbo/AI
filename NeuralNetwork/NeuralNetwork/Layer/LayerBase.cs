@@ -11,6 +11,7 @@ namespace NeuralNetwork.Layer
     {
         protected static readonly Random rnd = new Random();
         public double[] Input { get; set; }
+        public double[] InputError { get; set; }
 
         public int NbInput { get; private set; }
 
@@ -28,6 +29,7 @@ namespace NeuralNetwork.Layer
         
         public LayerBase(int nbInput, int nbOutput, IActivation activation, ILossFunction lossFunction)
         {
+            this.InputError = new double[nbInput];
             this.NbOutput = nbOutput;
             this.NbInput = nbInput;
             this.Output = new double[nbOutput];
@@ -57,7 +59,7 @@ namespace NeuralNetwork.Layer
             }
         }
 
-        public abstract double Train(double[] input, double[] expectedOutput, double learningRate);
+        public abstract double Train(double[] input, double[] expectedOutput, double learningRate, bool calcInputError = false);
         public abstract double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate);
         public abstract void Initialize();
     }
