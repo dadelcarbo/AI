@@ -40,7 +40,7 @@ namespace NeuralNetwork.Layer
             {
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] += errors[j] * this.Input[i] * learningRate;
+                    this.Weights[i, j] += learningRate * errors[j] *this.Input[i] ;
                 }
             }
             return error;
@@ -104,7 +104,7 @@ namespace NeuralNetwork.Layer
             var derivative = this.Activation.Derivative(this.NonActivatedOutput);
             for (var j = 0; j < this.NbOutput; j++)
             {
-                errors[j] = derivative[j] * (expectedOutput[j] - this.Output[j]) / this.NbInput;
+                errors[j] = derivative[j] * (expectedOutput[j] - this.Output[j]);
             }
 
             // Calculate InputError

@@ -1,14 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeuralNetwork;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Layer;
 using NeuralNetwork.Loss;
 using NeuralNetwork.MathTools;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeuralNetworkTest
 {
@@ -27,31 +22,36 @@ namespace NeuralNetworkTest
         }
 
         [TestMethod]
-        public void BackPropagateTest()
+        public void BackPropagateNoBiasTest()
         {
-            var layer = new DenseLayer(2, 1, new IdentityActivation(), new Distance());
+            double expectedWeight = 3;
+            double actualWeight = 2;
+
+            double inputData = 2;
+
+            double expectedOutput = inputData * expectedWeight;
+            double actualOutput = inputData * actualWeight;
+
+            var layer = new DenseLayerNoBias(1, 1, new IdentityActivation(), new Distance());
+
             layer.Initialize();
-            layer.Weights[0, 0] = 1;
-            layer.Weights[1, 0] = 1;
-            layer.Biases[0] = 0;
-
-            var input = new double[] { 1, 1 };
+            layer.Weights[0, 0] = actualWeight;
+            var input = new double[] { inputData };
 
             layer.Evaluate(input);
 
-            Assert.AreEqual(2, layer.Output[0]);
+            Assert.AreEqual(actualOutput, layer.Output[0]);
 
-            var expectedOutput = new double[] { 1 };
+            var inputError = new NNArray(1);
 
-            var inputError = new NNArray(2);
-            layer.BackPropagate(input, expectedOutput, 0.01, inputError);
-            Assert.AreEqual(-0.5, inputError[0]);
-            Assert.AreEqual(-0.5, inputError[1]);
+            layer.BackPropagate(input, new double[] { expectedOutput }, 0.01, inputError);
 
-            layer.Train(input, expectedOutput, 1);
+            double expectedErrorInput = (expectedOutput - actualOutput) * actualWeight;
+            Assert.AreEqual(expectedErrorInput, inputError[0]);
+            layer.Train(input, new double[] { expectedOutput }, 1);
 
             layer.Evaluate(input);
-            Assert.AreEqual(expectedOutput[0], layer.Output[0]);
+            Assert.AreEqual(expectedOutput, layer.Output[0]);
         }
         Random rnd = new Random(1);
         [TestMethod]
@@ -62,7 +62,7 @@ namespace NeuralNetworkTest
             int count = 20;
             double[] input = new double[count];
             double[] expectedOutput = new double[count];
-            for (int i = 1; i <count; i++)
+            for (int i = 1; i < count; i++)
             {
                 input[i] = i;
                 expectedOutput[i] = a * i + b;
@@ -116,11 +116,11 @@ namespace NeuralNetworkTest
             {
                 for (int i = 1; i < count; i++)
                 {
-                    error = layer.Train(new double[] {input[i]}, new double[] {expectedOutput[i]}, 0.01);
+                    error = layer.Train(new double[] { input[i] }, new double[] { expectedOutput[i] }, 0.01);
                 }
             }
             Assert.IsTrue(epoc < 1000);
-            Assert.IsTrue(Math.Abs(layer.Weights[0, 0]-a) < 0.01);
+            Assert.IsTrue(Math.Abs(layer.Weights[0, 0] - a) < 0.01);
         }
         [TestMethod]
         public void LinearRegressionNeuronBiasTest()
