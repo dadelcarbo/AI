@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeuralNetwork;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Layer;
 using NeuralNetwork.Loss;
