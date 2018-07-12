@@ -9,13 +9,14 @@ namespace NeuralNetwork.Layer
     {
         int NbInput { get; }
         double[] Input { get; }
+        double[] InputError { get; }
         int NbOutput { get; }
         NNMatrix Weights { get; }
         double[] Output { get; }
 
         void Evaluate(double[] input);
 
-        double Train(double[] input, double[] expectedOutput, double learningRate);
+        double Train(double[] input, double[] expectedOutput, double learningRate, bool calcInputError = false);
         double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate);
 
         void Initialize();

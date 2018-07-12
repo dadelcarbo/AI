@@ -11,6 +11,46 @@ namespace NeuralNetworkTest
     public class DenseLayerTest
     {
         [TestMethod]
+        public void XORNoBiasTest()
+        {
+            double[][] inputs = new double[][] { new double[] { -1, -1 }, new double[] { -1, 1 }, new double[] { 1, -1 }, new double[] { 1, 1 } };
+            double[] expectedOutput = new double[] { -1, 1, 1, -1 };
+
+            var network = new Network(
+                new IdentityLayer(2),
+                new DenseLayerNoBias(2, 1, new IdentityActivation(), new SquaredDistance()));
+            network.AddLayer(new DenseLayerNoBias(2, 2, new IdentityActivation(), new SquaredDistance()));
+            network.Initialize();
+
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                network.Evaluate(inputs[i]);
+                Assert.AreNotEqual(expectedOutput[i], network.OutputLayer.Output[0]);
+            }
+
+            // Train network
+            int epoc = 0;
+            double error = 100;
+            while (++epoc < 1000 && error > 0.001)
+            {
+                error = 0;
+                for (int i = 0; i < inputs.Length; i++)
+                {
+                  error += network.Train(inputs[i], new double[] { expectedOutput[i] }, 0.1);
+                }
+            }
+
+            //Assert.IsTrue(epoc < 1000);
+
+            //for (int i = 0; i < inputs.Length; i++)
+            //{
+            //    layer.Evaluate(inputs[i]);
+
+            //    Assert.IsTrue(Math.Abs(expectedOutput[i] - layer.Output[0]) < 0.01); // 1% error margin
+            //}
+        }
+
+        [TestMethod]
         public void EvaluateTest()
         {
             var layer = new DenseLayer(6, 3, new IdentityActivation(), new Distance());
@@ -93,23 +133,48 @@ namespace NeuralNetworkTest
         }
 
         [TestMethod]
-        public void LinearRegressionNoBiasTest()
+        public void LinearRegressionNeuronNoBiasTest()
         {
             // y = ax + b
-            double a = 5.2, b = 0;
-            int count = 6;
+            double a = -12, b = 0;
+            int count = 5;
+            int epoc;
+            var layer = new DenseLayerNoBias(1, 1, new IdentityActivation(), new SquaredDistance());
+            layer.Initialize();
+
+            TrainRegression(a, b, count, layer, out epoc);
+
+            Assert.IsTrue(epoc < 1000);
+            Assert.IsTrue(Math.Abs(layer.Weights[0, 0] - a) / a < 0.01); // 1% error margin
+        }
+        [TestMethod]
+        public void LinearRegressionNeuronBiasTest()
+        {
+            // y = ax + b
+            double a = -12, b = -3;
+            int count = 5;
+            int epoc;
+            var layer = new DenseLayerBias(1, 1, new IdentityActivation(), new SquaredDistance());
+            layer.Initialize();
+
+            TrainRegression(a, b, count, layer, out epoc);
+
+            Assert.IsTrue(epoc < 1000);
+            Assert.IsTrue(Math.Abs(layer.Weights[0, 0] - a) / a < 0.01); // 1% error margin
+            Assert.IsTrue(Math.Abs(layer.Weights[1, 0] - b) / b < 0.01); // 1% error margin
+        }
+
+        private void TrainRegression(double a, double b, int count, ILayer layer, out int epoc)
+        {
             double[] input = new double[count];
             double[] expectedOutput = new double[count];
             for (int i = 1; i < count; i++)
             {
-                input[i] = i;
-                expectedOutput[i] = a * i + b;
+                input[i] = (rnd.NextDouble() - 0.5) * 10;
+                expectedOutput[i] = a * input[i] + b;
             }
 
-            var layer = new DenseLayerNoBias(1, 1, new IdentityActivation(), new SquaredDistance());
-            layer.Initialize();
-
-            int epoc = 0;
+            epoc = 0;
             double error = 100;
             while (++epoc < 1000 && error > 0.001)
             {
@@ -118,39 +183,6 @@ namespace NeuralNetworkTest
                     error = layer.Train(new double[] { input[i] }, new double[] { expectedOutput[i] }, 0.01);
                 }
             }
-            Assert.IsTrue(epoc < 1000);
-            Assert.IsTrue(Math.Abs(layer.Weights[0, 0] - a) < 0.01);
         }
-        [TestMethod]
-        public void LinearRegressionNeuronBiasTest()
-        {
-            // y = ax + b
-            double a = 2, b = 3;
-            int count = 20;
-            double[] input = new double[count];
-            double[] expectedOutput = new double[count];
-            for (int i = 1; i < count; i++)
-            {
-                input[i] = i;
-                expectedOutput[i] = a * i + b;
-            }
-
-            var layer = new DenseLayerBias(1, 1, new IdentityActivation(), new SquaredDistance());
-            layer.Initialize();
-            layer.Weights[0, 0] = 2;
-
-            int epoc = 0;
-            double error = 100;
-            while (++epoc < 10000 && error > 0.01)
-            {
-                for (int i = 1; i < count; i++)
-                {
-                    error = layer.Train(new double[] { input[i] }, new double[] { expectedOutput[i] }, 0.1);
-                }
-            }
-
-            double coef = layer.Weights[0, 0];
-        }
-
     }
 }

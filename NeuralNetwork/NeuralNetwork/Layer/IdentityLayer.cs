@@ -6,8 +6,6 @@ namespace NeuralNetwork.Layer
 {
     public class IdentityLayer : LayerBase
     {
-        private static readonly Random rnd = new Random();
-
         public IdentityLayer(int nbInput) : base(nbInput, nbInput, new IdentityActivation(), null)
         {
         }
@@ -21,7 +19,7 @@ namespace NeuralNetwork.Layer
             }
         }
 
-        public override double Train(double[] input, double[] output, double learningRate)
+        public override double Train(double[] input, double[] output, double learningRate, bool calcInputError = false)
         {
             return 0.0;
         }

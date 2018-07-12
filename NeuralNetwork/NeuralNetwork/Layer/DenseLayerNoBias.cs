@@ -30,7 +30,7 @@ namespace NeuralNetwork.Layer
 
         private double[] errors;
         private double[] derivatives;
-        public override double Train(double[] input, double[] expectedOutput, double learningRate)
+        public override double Train(double[] input, double[] expectedOutput, double learningRate, bool calcInputError = false)
         {
             this.Evaluate(input);
 
