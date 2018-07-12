@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using NeuralNetwork.Activation;
 using NeuralNetwork.Loss;
 using NeuralNetwork.MathTools;
@@ -34,13 +36,13 @@ namespace NeuralNetwork.Layer
 
             // Calculate Error
             double error = this.LossFunction.Evaluate(this.Output, this.NonActivatedOutput, expectedOutput, errors, this.Activation);
-            
+
             // Update weights
             for (var j = 0; j < this.NbOutput; j++)
             {
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] += learningRate * errors[j] *this.Input[i] ;
+                    this.Weights[i, j] += learningRate * errors[j] * this.Input[i];
                 }
             }
             return error;
@@ -109,6 +111,15 @@ namespace NeuralNetwork.Layer
 
             // Calculate InputError
             this.Weights.Transpose().Multiply(errors, inputError);
+
+            // Update Weight
+            for (var j = 0; j < this.NbOutput; j++)
+            {
+                for (var i = 0; i < this.NbInput; i++)
+                {
+                    this.Weights[i, j] += learningRate * errors[j] * input[i];
+                }
+            }
 
             return 0.0;
         }

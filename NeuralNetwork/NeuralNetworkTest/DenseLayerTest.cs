@@ -44,11 +44,10 @@ namespace NeuralNetworkTest
 
             var inputError = new NNArray(1);
 
-            layer.BackPropagate(input, new double[] { expectedOutput }, 0.01, inputError);
+            layer.BackPropagate(input, new double[] { expectedOutput }, 1, inputError);
 
             double expectedErrorInput = (expectedOutput - actualOutput) * actualWeight;
             Assert.AreEqual(expectedErrorInput, inputError[0]);
-            layer.Train(input, new double[] { expectedOutput }, 1);
 
             layer.Evaluate(input);
             Assert.AreEqual(expectedOutput, layer.Output[0]);
