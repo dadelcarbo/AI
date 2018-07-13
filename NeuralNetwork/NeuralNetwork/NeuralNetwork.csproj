@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activation\ActivationManager.cs" />
+    <Compile Include="Activation\Tanh.cs" />
     <Compile Include="Activation\Sigmoid.cs" />
     <Compile Include="Layer\DenseLayerBias.cs" />
     <Compile Include="Layer\DenseLayerNoBias.cs" />

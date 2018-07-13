@@ -13,6 +13,7 @@ namespace NeuralNetwork.Layer
         int NbOutput { get; }
         NNMatrix Weights { get; }
         double[] Output { get; }
+        double[] NonActivatedOutput { get; }
 
         void Evaluate(double[] input);
 

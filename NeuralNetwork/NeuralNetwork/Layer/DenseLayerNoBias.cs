@@ -135,9 +135,38 @@ namespace NeuralNetwork.Layer
             return 0.0;
         }
 
-        public override double BackPropagate(double[] OutputError, double learningRate, double[] weightedError)
+        public override double BackPropagate(double[] outputError, double learningRate, double[] weightedError)
         {
-            throw new NotImplementedException();
+            // Calculate Error
+            var derivative = this.Activation.Derivative(this.NonActivatedOutput);
+            for (var j = 0; j < this.NbOutput; j++)
+            {
+                errors[j] = derivative[j] * outputError[j];
+            }
+
+            // Calculate InputError for backward propagation
+            if (weightedError != null)
+            {
+                for (var i = 0; i < this.NbInput; i++)
+                {
+                    weightedError[i] = 0;
+                    for (var j = 0; j < this.NbOutput; j++)
+                    {
+                        weightedError[i] += this.Weights[i, j] * errors[j];
+                    }
+                }
+            }
+
+            // Update Weight
+            for (var j = 0; j < this.NbOutput; j++)
+            {
+                for (var i = 0; i < this.NbInput; i++)
+                {
+                    this.Weights[i, j] += learningRate * errors[j] * this.Input[i];
+                }
+            }
+
+            return 0.0;
         }
 
         public override void Initialize()
@@ -146,7 +175,7 @@ namespace NeuralNetwork.Layer
             {
                 for (var i = 0; i < this.NbInput; i++)
                 {
-                    this.Weights[i, j] = rnd.NextDouble() * 2.0 - 1.0;
+                    this.Weights[i, j] = rnd.NextDouble();
                 }
             }
         }

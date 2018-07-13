@@ -26,8 +26,21 @@ namespace NeuralNetwork
 
         private bool isInitialized = false;
 
+        /// <summary>
+        /// Add hidden layer to the end
+        /// </summary>
+        /// <param name="layer"></param>
         public void AddLayer(ILayer layer)
         {
+            // Validation
+            if (this.HiddenLayers.Count==0)
+            {
+                if (this.InputLayer.NbOutput != layer.NbInput) throw new ArgumentException("Layer nb input doesn't match previous layer output");
+            }
+            else
+            {
+                if (this.HiddenLayers.Last().NbOutput != layer.NbInput) throw new ArgumentException("Layer nb input doesn't match previous layer output");
+            }
             this.HiddenLayers.Add(layer);
         }
 
@@ -64,20 +77,30 @@ namespace NeuralNetwork
         {
             this.Evaluate(input);
 
-            var outputError = expectedOutput - this.OutputLayer.Output;
+            double[] outputError = new double[this.OutputLayer.NbOutput];
+
+            var error = this.OutputLayer.LossFunction.Evaluate(this.OutputLayer.Output, expectedOutput, outputError);
+
             double[] weightedError = HiddenLayers.Any() ? new double[this.OutputLayer.NbInput] : null;
 
             this.OutputLayer.BackPropagate(outputError, learningRate, weightedError);
-            for (int n = this.HiddenLayers.Count - 1; n >= 0; n++)
+            for (int n = this.HiddenLayers.Count - 1; n >= 0; n--)
             {
-                // Apply derivative to weightedErrors
-                outputError = weightedError; // @@@@ Apply layer derivative
+                var layer = this.HiddenLayers[n];
 
-                weightedError = n>0 ? new double[this.HiddenLayers[n].NbInput] : null;
+                // Apply derivative to weightedErrors to calculate next layer output error
+                outputError = new double[layer.NbOutput];
+                var derivative = layer.Activation.Derivative(layer.NonActivatedOutput);
+                for(int i =0; i< outputError.Length; i++)
+                {
+                    outputError[i] = weightedError[i] * derivative[i]; 
+                }
+
+                weightedError = n>0 ? new double[layer.NbInput] : null;
                 this.HiddenLayers[n].BackPropagate(outputError, learningRate, weightedError);
             }
 
-            return 0;
+            return error;
         }
 
         public double Train(double[] input, double[] expectedOutput, double learningRate, double error, int maxSteps)

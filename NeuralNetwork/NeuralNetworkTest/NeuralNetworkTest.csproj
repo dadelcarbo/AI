@@ -52,6 +52,7 @@
     <Compile Include="DenseLayerTest.cs" />
     <Compile Include="NNTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NetworkTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Validated.orderedtest">

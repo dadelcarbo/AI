@@ -71,6 +71,7 @@ namespace NeuralNetworkTest
             }
         }
 
+        #region Activation & Loss
         [TestMethod]
         public void SoftMax()
         {
@@ -93,7 +94,7 @@ namespace NeuralNetworkTest
 
             Assert.IsTrue(Math.Abs(1 - actualSum) <= 0.00001);
         }
-
+        
         [TestMethod]
         public void CrossEntropyTest()
         {
@@ -122,7 +123,6 @@ namespace NeuralNetworkTest
 
             Assert.AreEqual(entropyOH, entropy);
         }
-
-        
+        #endregion
     }
 }

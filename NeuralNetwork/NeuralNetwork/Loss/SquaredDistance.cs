@@ -11,7 +11,7 @@ namespace NeuralNetwork.Loss
 
         public SquaredDistance()
         {
-            this.Ratio = 0.5;
+            this.Ratio = 1;
         }
         
         public override double Evaluate(double[] actual, double[] expected, double[] errors)
@@ -22,12 +22,11 @@ namespace NeuralNetwork.Loss
             for (int i = 0; i < expected.Length; i++)
             {
                 var diff = this.Ratio * (expected[i] - actual[i]);
-                diff *= diff;
                 errors[i] = diff;
-                sum += diff;
+                sum += diff*diff;
             }
 
-            return Math.Sqrt(sum);
+            return sum;
         }
 
         public override double Derivative(double actual, double expected)
