@@ -23,5 +23,7 @@ namespace NeuralNetwork.Layer
 
         IActivation Activation { get; set; }
         ILossFunction LossFunction { get; set; }
+
+        double BackPropagate(double[] OutputError, double learningRate, double[] weightedError);
     }
 }

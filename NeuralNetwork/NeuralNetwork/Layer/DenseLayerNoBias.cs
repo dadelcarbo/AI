@@ -98,10 +98,9 @@ namespace NeuralNetwork.Layer
             return Math.Sqrt(error);
         }
 
-        public double BackPropagate(double[] input, double[] expectedOutput, double learningRate, double[] inputError)
-        {
-            this.Evaluate(input);
 
+        public double BackPropagate(double[] input, double[] expectedOutput, double learningRate, double[] weightedError)
+        {
             // Calculate Error
             var derivative = this.Activation.Derivative(this.NonActivatedOutput);
             for (var j = 0; j < this.NbOutput; j++)
@@ -109,8 +108,20 @@ namespace NeuralNetwork.Layer
                 errors[j] = derivative[j] * (expectedOutput[j] - this.Output[j]);
             }
 
-            // Calculate InputError
-            this.Weights.Transpose().Multiply(errors, inputError);
+            // Calculate InputError for backward propagation
+            if (weightedError != null)
+            {
+                //this.Weights.Transpose().Multiply(errors, inputError);
+                for (var i = 0; i < this.NbInput; i++)
+                {
+                    weightedError[i] = 0;
+                    for (var j = 0; j < this.NbOutput; j++)
+                    {
+                        // Apply derivative to input error
+                        weightedError[i] += this.Weights[i, j] * errors[j];
+                    }
+                }
+            }
 
             // Update Weight
             for (var j = 0; j < this.NbOutput; j++)
@@ -122,6 +133,11 @@ namespace NeuralNetwork.Layer
             }
 
             return 0.0;
+        }
+
+        public override double BackPropagate(double[] OutputError, double learningRate, double[] weightedError)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Initialize()

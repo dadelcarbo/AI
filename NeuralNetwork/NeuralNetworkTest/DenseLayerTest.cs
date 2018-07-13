@@ -63,7 +63,7 @@ namespace NeuralNetworkTest
         }
 
         [TestMethod]
-        public void BackPropagateNoBiasTest()
+        public void BackPropagateNoBias_1NeuronTest()
         {
             double expectedWeight = 3;
             double actualWeight = 2;
@@ -87,11 +87,38 @@ namespace NeuralNetworkTest
 
             layer.BackPropagate(input, new double[] { expectedOutput }, 1, inputError);
 
-            double expectedErrorInput = (expectedOutput - actualOutput) * actualWeight;
+            double expectedErrorInput = (expectedOutput - actualOutput) * actualWeight; // I don't understand should be (expectedOutput - actualOutput) / actualWeight but docmentation show different
             Assert.AreEqual(expectedErrorInput, inputError[0]);
+            Assert.AreEqual(expectedWeight, layer.Weights[0,0]);
+        }
+
+        [TestMethod]
+        public void BackPropagateNoBias_2NeuronTest()
+        {
+            double expectedWeight = 3;
+            double actualWeight = 2;
+
+            double inputData = 2;
+
+            double expectedOutput = inputData * expectedWeight;
+            double actualOutput = inputData * actualWeight;
+
+            var layer = new DenseLayerNoBias(1, 1, new IdentityActivation(), new Distance());
+
+            layer.Initialize();
+            layer.Weights[0, 0] = actualWeight;
+            var input = new double[] { inputData };
 
             layer.Evaluate(input);
-            Assert.AreEqual(expectedOutput, layer.Output[0]);
+
+            Assert.AreEqual(actualOutput, layer.Output[0]);
+
+            var inputError = new NNArray(1);
+
+            layer.BackPropagate(input, new double[] { expectedOutput }, 1, inputError);
+
+            double expectedErrorInput = (expectedOutput - actualOutput) * actualWeight; // I don't understand should be (expectedOutput - actualOutput) / actualWeight but docmentation show different
+            Assert.AreEqual(expectedErrorInput, inputError[0]);
         }
         Random rnd = new Random(1);
         [TestMethod]

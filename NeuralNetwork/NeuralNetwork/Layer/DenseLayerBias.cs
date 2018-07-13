@@ -137,6 +137,12 @@ namespace NeuralNetwork.Layer
             return 0.0;
         }
 
+
+        public override double BackPropagate(double[] OutputError, double learningRate, double[] weightedError)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Initialize()
         {
             for (var j = 0; j < this.NbOutput; j++)

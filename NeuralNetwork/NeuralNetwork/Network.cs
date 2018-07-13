@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NeuralNetwork.Layer;
+using NeuralNetwork.MathTools;
 
 namespace NeuralNetwork
 {
@@ -59,11 +60,22 @@ namespace NeuralNetwork
             this.isInitialized = true;
         }
 
-        public double Train(double[] input, double[] expectedOutput, double learningRate)
+        public double Train(double[] input, NNArray expectedOutput, double learningRate)
         {
             this.Evaluate(input);
 
-            this.OutputLayer.Train(input, expectedOutput, learningRate, true);
+            var outputError = expectedOutput - this.OutputLayer.Output;
+            double[] weightedError = HiddenLayers.Any() ? new double[this.OutputLayer.NbInput] : null;
+
+            this.OutputLayer.BackPropagate(outputError, learningRate, weightedError);
+            for (int n = this.HiddenLayers.Count - 1; n >= 0; n++)
+            {
+                // Apply derivative to weightedErrors
+                outputError = weightedError; // @@@@ Apply layer derivative
+
+                weightedError = n>0 ? new double[this.HiddenLayers[n].NbInput] : null;
+                this.HiddenLayers[n].BackPropagate(outputError, learningRate, weightedError);
+            }
 
             return 0;
         }
@@ -72,10 +84,11 @@ namespace NeuralNetwork
         {
             return 0;
         }
-        public double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate, double error, int maxSteps)
+
+        public double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate,
+            double error, int maxSteps)
         {
             return 0;
         }
-        
     }
 }

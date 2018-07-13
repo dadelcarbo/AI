@@ -35,5 +35,10 @@ namespace NeuralNetwork.Layer
         public override void Initialize()
         {
         }
+
+        public override double BackPropagate(double[] OutputError, double learningRate, double[] weightedError)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

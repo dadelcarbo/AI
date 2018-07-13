@@ -62,5 +62,6 @@ namespace NeuralNetwork.Layer
         public abstract double Train(double[] input, double[] expectedOutput, double learningRate, bool calcInputError = false);
         public abstract double Train(List<double[]> inputBatch, List<double[]> expectedOutputBatch, double learningRate);
         public abstract void Initialize();
+        public abstract double BackPropagate(double[] OutputError, double learningRate, double[] weightedError);
     }
 }
