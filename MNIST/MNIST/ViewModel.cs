@@ -1,5 +1,6 @@
 ﻿using NeuralNetwork;
 using NeuralNetwork.Activation;
+using NeuralNetwork.DataUtils;
 using NeuralNetwork.Layer;
 using NeuralNetwork.Loss;
 using System.Collections.Generic;
@@ -20,11 +21,11 @@ namespace MNIST
                 oneHotLabel.Add(i, Utils.OneHot(10, i));
                            }
         }
-        public List<Image> Images { get; set; } = new List<Image>();
+        public List<MNISTImage> Images { get; set; } = new List<MNISTImage>();
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private Image image;
-        public Image Image
+        private MNISTImage image;
+        public MNISTImage Image
         {
             get { return image; }
             set

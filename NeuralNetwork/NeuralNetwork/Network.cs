@@ -62,6 +62,17 @@ namespace NeuralNetwork
 
         public void Initialize()
         {
+            // Validate dimensions
+            var layers = new List<ILayer> { this.InputLayer };
+            layers.AddRange(this.HiddenLayers);
+            layers.Add(OutputLayer);
+            for (int i=1; i<layers.Count;i++)
+            {
+                if (layers[i].NbInput != layers[i - 1].NbOutput)
+                    throw new ArgumentOutOfRangeException($"Input for layer {i+1} doesn't match previous output");
+            }
+
+            // Initialize weights
             this.InputLayer.Initialize();
             foreach (var hiddenLayer in this.HiddenLayers)
             {

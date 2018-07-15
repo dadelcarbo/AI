@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NeuralNetwork.Activation;
 
 namespace NeuralNetwork.Layer
@@ -16,9 +17,10 @@ namespace NeuralNetwork.Layer
         protected override void EvaluateNonActivated(double[] input)
         {
             this.Input = input;
+            var ratio = this.Max / input.Max();
             for (var i = 0; i < this.NbInput; i++)
             {
-                this.NonActivatedOutput[i] = this.Input[i] / Max;
+                this.NonActivatedOutput[i] = this.Input[i] * ratio;
             }
         }
 

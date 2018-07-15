@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeuralNetwork.MathTools;
+using System;
 using System.Linq;
 
 namespace NeuralNetwork.Activation

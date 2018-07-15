@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace MNIST
+namespace NeuralNetwork.DataUtils
 {
-    public class Image
+    public class MNISTImage
     {
         private static int count = 0;
-        public Image()
+        public MNISTImage()
         {
             Id = count++;
         }
@@ -53,11 +49,8 @@ namespace MNIST
             return wbm;
         }
     }
-
     public static class Extensions
     {
-       
-
         public static int ReadBigInt32(this BinaryReader br)
         {
             var bytes = br.ReadBytes(sizeof(Int32));

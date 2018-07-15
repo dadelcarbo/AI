@@ -12,8 +12,8 @@ namespace NeuralNetwork.Layer
         double[] InputError { get; }
         int NbOutput { get; }
         NNMatrix Weights { get; }
-        double[] Output { get; }
-        double[] NonActivatedOutput { get; }
+        NNArray Output { get; }
+        NNArray NonActivatedOutput { get; }
 
         void Evaluate(double[] input);
 

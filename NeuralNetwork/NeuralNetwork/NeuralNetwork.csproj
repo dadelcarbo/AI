@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -38,11 +39,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationManager.cs" />
     <Compile Include="Activation\Tanh.cs" />
     <Compile Include="Activation\Sigmoid.cs" />
+    <Compile Include="DataUtils\MNISTImage.cs" />
+    <Compile Include="DataUtils\MNISTReader.cs" />
     <Compile Include="Layer\DenseLayerBias.cs" />
     <Compile Include="Layer\DenseLayerNoBias.cs" />
     <Compile Include="Layer\NormalizedLayer.cs" />

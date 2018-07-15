@@ -29,10 +29,23 @@ namespace NeuralNetwork.MathTools
             }
             return res;
         }
+
+        /// <summary>Update value using Vi=Vi/max</summary>
+        /// <param name="n">   Number of colums.</param>
+        /// <returns>     An array with uniformly distributed random elements.
+        /// </returns>
+        public void Normalize()
+        {
+            double max = this.Values.Max();
+
+            for (int i = 0; i < this.Length; i++)
+            { this.Values[i] /= max; }
+
+        }
         /// <summary>Generate matrix with random elements</summary>
-         /// <param name="n">   Number of colums.</param>
-         /// <returns>     An array with uniformly distributed random elements.
-         /// </returns>
+        /// <param name="n">   Number of colums.</param>
+        /// <returns>     An array with uniformly distributed random elements.
+        /// </returns>
         public NNArray Copy()
         {
             double[] res = new double[this.Length];
@@ -153,6 +166,35 @@ namespace NeuralNetwork.MathTools
 
         #endregion
 
+        public int ArgMax()
+        {
+            int index = 0;
+            double max = this.Values[0];
+            for (int i = 1; i < this.Values.Length; i++)
+            {
+                if (this.Values[i] > max)
+                {
+                    index = i;
+                    max = this.Values[i];
+                }
+            }
+            return index;
+        }
+
+        public int ArgMin()
+        {
+            int index = 0;
+            double min = this.Values[0];
+            for (int i = 1; i < this.Values.Length; i++)
+            {
+                if (this.Values[i] < min)
+                {
+                    index = i;
+                    min = this.Values[i];
+                }
+            }
+            return index;
+        }
 
     }
 }

@@ -17,11 +17,11 @@ namespace NeuralNetwork.Layer
 
         public int NbOutput { get; private set; }
 
-        public double[] Output { get; private set; }
+        public NNArray Output { get; private set; }
 
         public NNMatrix Weights { get; private set; }
 
-        public double[] NonActivatedOutput { get; protected set; }
+        public NNArray NonActivatedOutput { get; protected set; }
 
         public IActivation Activation { get; set; }
 
