@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CoinFlow", "CoinFlow\CoinFlow.pyproj", "{E0B04A12-8B8C-46F5-8B01-63C7DAD2FF20}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0B04A12-8B8C-46F5-8B01-63C7DAD2FF20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0B04A12-8B8C-46F5-8B01-63C7DAD2FF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3C10879-2935-4D9E-AB7E-DC2B6ADE0CE7}
+	EndGlobalSection
+EndGlobal
