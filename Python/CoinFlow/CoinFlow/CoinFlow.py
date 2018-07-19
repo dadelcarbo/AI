@@ -1,6 +1,7 @@
 import numpy as np
+from Agent import Agent
 
-coinRatio = 0.25
+coinRatio = 0.1
 
 def toCoin(v):
     if (v < coinRatio):
@@ -33,18 +34,73 @@ def makeGround(length, width):
                 y[i][j] = toCoin(x[i][j])
     return y
 
-width = 5
-length = 10
-#makeFile(10, length, width)
+def plot(ax, state, agent):
+    A = state
+    ax.imshow(A, interpolation='nearest')
+    plt.show()
 
+width = 5
+length = 100
+#makeFile(10, length, width)
 ground = makeGround(length, width)
 print("ground")
 print(ground)
+height = 1
+print(range(length - height))
 
+agent = Agent(width, is_eval = True)
 
-#loop through ground by pack of 5
-for i in range(length - width):
-    screen = ground[range(i,i+width),:]
-    print("screen "+str(i))
-    print(screen)
+reward = 0
 
+actions = ['nop', 'right', 'left']
+
+batch_size = 10
+
+#def train():
+#    #loop through ground by pack of width
+#    r = 0
+#    for i in range(length - height):
+#        state = ground[range(i,i + height),:]
+#        #print(state)
+#        #visu = np.zeros((1,width))
+#        #visu[0, agent.position] = 1
+#        #print(visu)
+#        action = agent.act(state)
+#        #print("Action: " + actions[action])
+
+#        agent.move(action)
+
+#        if state[-1,agent.position] == 1:
+#            r+=1
+#        else:
+#            r -= 0.1
+
+#        #print("Pos: " + str(agent.position) + " Reward: " + str(reward))
+
+#        agent.memory.append((state, action, r, state, False))
+#        if len(agent.memory) > batch_size:
+#            agent.expReplay(batch_size)
+
+#    return r
+def evaluate():
+    #loop through ground by pack of width
+    r = 0
+    for i in range(length - height):
+        state = ground[range(i,i + height),:]
+        #print(state)
+        
+        action = agent.act(state)
+       
+        agent.move(action)
+
+        if state[-1,agent.position] == 1:
+            r+=1
+        else:
+            r -= 0.1
+
+    return r
+
+for i in range(100):
+    print("Step: " + str(i) + "Reward: " + str(agent.train(ground, 10, length, height, batch_size)))
+
+print("Final Reward: " + str(evaluate()))
