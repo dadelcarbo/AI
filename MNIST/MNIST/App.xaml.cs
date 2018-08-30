@@ -14,4 +14,5 @@ namespace MNIST
     public partial class App : Application
     {
     }
+
 }
