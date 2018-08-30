@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\MNIST"
+    "\\MNIST",
+    "\\MNIST\\MNIST"
   ],
+  "SelectedNode": "\\MNIST\\MNIST\\App.xaml.cs",
   "PreviewInSolutionExplorer": false
 }
