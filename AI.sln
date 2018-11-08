@@ -1,0 +1,19 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A8C4230F-67CF-47A8-9538-A8C93E01193E}"
+	ProjectSection(SolutionItems) = preProject
+		Presentation\AI_DavidCarbonel.pptx = Presentation\AI_DavidCarbonel.pptx
+		Presentation\Machine Learning - The Deep Learning Side.pptx = Presentation\Machine Learning - The Deep Learning Side.pptx
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45B8DE0E-5CAC-44F0-A43B-5F651CA21ED9}
+	EndGlobalSection
+EndGlobal
