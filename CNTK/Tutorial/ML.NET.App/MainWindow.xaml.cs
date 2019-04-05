@@ -1,0 +1,96 @@
+﻿using ML.NET.App.PacMan.Agents;
+using ML.NET.App.PacMan.Model;
+using ML.NET.App.PacMan.View;
+using System;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
+
+namespace ML.NET.App
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private World world;
+
+        public static MainWindow Instance;
+        public MainWindow()
+        {
+            Instance = this;
+
+            InitializeComponent();
+
+            world = World.Instance;
+            world.GameCompleted += World_GameCompleted;
+
+            var renderer = new GameRenderer(this.GameCanvas);
+
+            this.GameCanvas.Height = this.GameCanvas.Width = World.SIZE * GameRenderer.SPRITE_SIZE;
+
+            renderer.DrawWorld(world);
+
+            GameObject.World = world;
+            GameObject.Renderer = renderer;
+
+            this.DataContext = world;
+            world.PropertyChanged += World_PropertyChanged;
+            timer.Interval = TimeSpan.FromMilliseconds(200);
+            timer.Tick += world.GameLoop;
+            timer.Start();
+
+            this.KeyDown += MainWindow_KeyDown;
+        }
+
+        DispatcherTimer timer = new DispatcherTimer();
+
+        private void World_GameCompleted(object sender, EventArgs e)
+        {
+            timer.Stop();
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (world.CurrentAgent.Name == "Keyboard Agent")
+            {
+                var agent = (KeyboardAgent)world.CurrentAgent;
+                switch (e.Key)
+                {
+                    case Key.Up:
+                        agent.AddMove(PlayAction.Up);
+                        break;
+                    case Key.Down:
+                        agent.AddMove(PlayAction.Down);
+                        break;
+                    case Key.Left:
+                        agent.AddMove(PlayAction.Left);
+                        break;
+                    case Key.Right:
+                        agent.AddMove(PlayAction.Right);
+                        break;
+                }
+            }
+        }
+
+        private void World_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "CurrentAgent")
+            {
+                if (world.CurrentAgent.Name == "Keyboard Agent")
+                {
+                    this.Focus();
+                }
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.world.Start();
+            GameObject.Renderer.Clear();
+            GameObject.Renderer.DrawWorld(world);
+
+            this.timer.Start();
+        }
+    }
+}

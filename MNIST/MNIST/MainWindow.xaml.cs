@@ -1,7 +1,4 @@
-﻿using NeuralNetwork.DataUtils;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using MNIST.ML.NET.DataUtils;
 using System.Linq;
 using System.Windows;
 
@@ -18,19 +15,7 @@ namespace MNIST
             InitializeComponent();
 
             vm = (ViewModel)this.Resources["ViewModel"];
-            this.DataContext = vm;
-            int i = 0;
-            foreach (var item in MnistReader.Read(MnistReader.TrainImages, MnistReader.TrainLabels))
-            {
-                vm.Images.Add(item);
-                if (i++ > 200) break;
-            }
-
-            this.DataContext = this;
-
-            vm.Image = vm.Images.First();
-
-
+            vm.Initialize();
         }
 
         private void EvaluateButton_Click(object sender, RoutedEventArgs e)

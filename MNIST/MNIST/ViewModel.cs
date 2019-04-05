@@ -1,29 +1,33 @@
-﻿using NeuralNetwork;
-using NeuralNetwork.Activation;
-using NeuralNetwork.DataUtils;
-using NeuralNetwork.Layer;
-using NeuralNetwork.Loss;
+﻿using MNIST.ML.NET.DataUtils;
+using MNIST.ML.NET.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MNIST
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        Network network;
-        SortedDictionary<byte, double[]> oneHotLabel = new SortedDictionary<byte, double[]>();
         public ViewModel()
         {
-            network = new Network(new NormalizedLayer(28 * 28, 255), new DenseLayer(28 * 28, 10, new Softmax(), new CrossEntropyOneHot()));
             this.output = new double[10];
-
-            for (byte i = 0; i < 10; i++) {
-                oneHotLabel.Add(i, Utils.OneHot(10, i));
-                           }
         }
         public List<MNISTImage> Images { get; set; } = new List<MNISTImage>();
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void Initialize()
+        {
+            int i = 0;
+            foreach (var item in MnistReader.Read(MnistReader.TrainImages, MnistReader.TrainLabels))
+            {
+                Images.Add(item);
+                if (i++ > 200) break;
+            }
+            Image = Images.First();
+        }
+
         private MNISTImage image;
         public MNISTImage Image
         {
@@ -52,18 +56,16 @@ namespace MNIST
             }
         }
 
+        MNISTModel model = new MNISTModel();
+
         public void Evaluate()
         {
-            this.Output = null;
-
-            network.Evaluate(Image.Values);
-
-            this.Output = network.OutputLayer.Output;
         }
+
 
         public void Train()
         {
-            network.Train(Image.Values,  oneHotLabel[Image.Label], 0.01, 0.01, 1000);
+            model.Train(Images.Select(i => i.MNISTData));
         }
     }
 

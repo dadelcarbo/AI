@@ -9,7 +9,7 @@ namespace NeuralNetwork.DataUtils
 {
     public static class MnistReader
     {
-        public static string RootPath = string.Empty;
+        public static string RootPath = @"C:\AI\MNIST";
         public const string TrainImages = "train-images.idx3-ubyte";
         public const string TrainLabels = "train-labels.idx1-ubyte";
         public const string TestImages = "t10k-images.idx3-ubyte";

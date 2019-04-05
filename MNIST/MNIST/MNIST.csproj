@@ -197,9 +197,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\NeuralNetwork\NeuralNetwork\NeuralNetwork.csproj">
-      <Project>{bbe8f7c0-906c-409b-8e2c-b383ffe4aa5b}</Project>
-      <Name>NeuralNetwork</Name>
+    <ProjectReference Include="MNIST.ML.NET\MNIST.ML.NET.csproj">
+      <Project>{A813841D-1861-43E3-B03A-ED59C4BFD200}</Project>
+      <Name>MNIST.ML.NET</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

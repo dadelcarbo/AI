@@ -3,13 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetwork", "NeuralNetwork\NeuralNetwork.csproj", "{BBE8F7C0-906C-409B-8E2C-B383FFE4AA5B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworkTest", "NeuralNetworkTest\NeuralNetworkTest.csproj", "{549C9C4B-65C1-4C21-81FF-6F2719B45687}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkUI", "NetworkUI\NetworkUI.csproj", "{2A397D79-9112-41E3-B9B6-404037060518}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNIST", "..\MNIST\MNIST\MNIST.csproj", "{E49843B5-0884-43B0-990E-DE1110344BF8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNIST.ML.NET", "..\MNIST\MNIST\MNIST.ML.NET\MNIST.ML.NET.csproj", "{A813841D-1861-43E3-B03A-ED59C4BFD200}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,22 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BBE8F7C0-906C-409B-8E2C-B383FFE4AA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBE8F7C0-906C-409B-8E2C-B383FFE4AA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBE8F7C0-906C-409B-8E2C-B383FFE4AA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBE8F7C0-906C-409B-8E2C-B383FFE4AA5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{549C9C4B-65C1-4C21-81FF-6F2719B45687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{549C9C4B-65C1-4C21-81FF-6F2719B45687}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{549C9C4B-65C1-4C21-81FF-6F2719B45687}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{549C9C4B-65C1-4C21-81FF-6F2719B45687}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A397D79-9112-41E3-B9B6-404037060518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A397D79-9112-41E3-B9B6-404037060518}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A397D79-9112-41E3-B9B6-404037060518}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A397D79-9112-41E3-B9B6-404037060518}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E49843B5-0884-43B0-990E-DE1110344BF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E49843B5-0884-43B0-990E-DE1110344BF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E49843B5-0884-43B0-990E-DE1110344BF8}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E49843B5-0884-43B0-990E-DE1110344BF8}.Debug|Any CPU.Build.0 = Debug|x64
 		{E49843B5-0884-43B0-990E-DE1110344BF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E49843B5-0884-43B0-990E-DE1110344BF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A813841D-1861-43E3-B03A-ED59C4BFD200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A813841D-1861-43E3-B03A-ED59C4BFD200}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A813841D-1861-43E3-B03A-ED59C4BFD200}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A813841D-1861-43E3-B03A-ED59C4BFD200}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
