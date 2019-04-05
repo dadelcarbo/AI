@@ -69,6 +69,7 @@ namespace ML.NET.App.PacMan.Agents
             {
                 Console.WriteLine($"Train batch");
 
+
                 states.Clear();
             }
         }
