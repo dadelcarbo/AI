@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using CNTK;
 using ML.NET.App.PacMan.Model;
@@ -48,7 +49,7 @@ namespace ML.NET.App.PacMan.Agents
 
         private void OnGameCompleted(object sender, EventArgs e)
         {
-            Console.WriteLine("OnGameCompleted");
+            Trace.WriteLine("OnGameCompleted");
             previousScore = 0;
 
 
@@ -62,12 +63,12 @@ namespace ML.NET.App.PacMan.Agents
             // Calculate reward
             state.Reward = world.Score - previousScore;
             previousScore = world.Score;
-            //Console.WriteLine($"OnWorldMovePerformed => {action} Reward = {state.Reward}");
+            //Trace.WriteLine($"OnWorldMovePerformed => {action} Reward = {state.Reward}");
 
             states.Add(state);
             if (states.Count >= batchSize)
             {
-                Console.WriteLine($"Train batch");
+                Trace.WriteLine($"Train batch");
 
 
                 states.Clear();
@@ -83,7 +84,7 @@ namespace ML.NET.App.PacMan.Agents
             PlayAction action = PlayAction.NOP;
             if (rnd.Next(100) > epsilon)
             {
-                // Console.WriteLine("Calculated Action");
+                // Trace.WriteLine("Calculated Action");
 
                 inputDataMap[inputVariable] = worldValue;
                 outputDataMap[model.Output] = null;
@@ -108,7 +109,7 @@ namespace ML.NET.App.PacMan.Agents
             }
             else
             {
-                //Console.WriteLine("Random Action");
+                //Trace.WriteLine("Random Action");
                 action = RandomAgent.GetRandomAction();
             }
             state = new State

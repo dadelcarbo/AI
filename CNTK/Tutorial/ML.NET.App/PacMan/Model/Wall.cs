@@ -2,7 +2,7 @@
 {
     public class Wall : GameObject, IGameObject
     {
-        public override int ClassId => 1;
+        public override int ClassId => WallId;
         public Wall(Position position)
         {
             this.Position = position;

@@ -1,5 +1,6 @@
 ﻿using CNTK;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ML.NET.App.CNTKHelper
@@ -177,7 +178,7 @@ namespace ML.NET.App.CNTKHelper
             {
                 float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
                 float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
-                Console.WriteLine($"Minibatch: {minibatchIdx} CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
+                Trace.WriteLine($"Minibatch: {minibatchIdx} CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
             }
         }
 
@@ -187,11 +188,11 @@ namespace ML.NET.App.CNTKHelper
 
             if (shape.Rank == 3)
             {
-                Console.WriteLine($"{functionName} dim0: {shape[0]}, dim1: {shape[1]}, dim2: {shape[2]}");
+                Trace.WriteLine($"{functionName} dim0: {shape[0]}, dim1: {shape[1]}, dim2: {shape[2]}");
             }
             else
             {
-                Console.WriteLine($"{functionName} dim0: {shape[0]}");
+                Trace.WriteLine($"{functionName} dim0: {shape[0]}");
             }
         }
     }

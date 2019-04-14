@@ -36,9 +36,9 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(new KeyboardAgent());
             this.Agents.Add(new RandomAgent());
             this.Agents.Add(new EuristicAgent());
-            this.Agents.Add(this.CurrentAgent = new MLAgent());
+            this.Agents.Add(this.currentAgent = new DijkstraAgent());
+            this.Agents.Add(new MLAgent());
 
-            this.CurrentAgent.Activate();
             this.Start();
         }
 
@@ -68,20 +68,35 @@ namespace ML.NET.App.PacMan.Model
                 this.Values[i, SIZE - 1] = 1;
                 this.Values[SIZE - 1, i] = 1;
             }
+            for (int i = 2; i < SIZE; i++)
+            {
+                this.Values[SIZE / 2, i] = 1;
+            }
 
             // Create Coins
             for (int i = 0; i < NB_COINS;)
             {
                 int x = rnd.Next(1, SIZE - 2);
                 int y = rnd.Next(1, SIZE - 2);
-                if (this.Values[x, y] == 2) continue;
+                if (this.Values[x, y] != 0) continue;
 
                 this.Values[x, y] = 2;
+                i++;
+            }
+            // Create Ennemies
+            for (int i = 0; i < NB_ENNEMIES;)
+            {
+                int x = rnd.Next(1, SIZE - 2);
+                int y = rnd.Next(1, SIZE - 2);
+                if (this.Values[x, y] == 3) continue;
+
+                this.Values[x, y] = 3;
                 i++;
             }
 
             this.Walls.Clear();
             this.Coins.Clear();
+            this.Ennemies.Clear();
             // Create data array
             for (int i = 0; i < SIZE; i++)
             {
@@ -95,10 +110,14 @@ namespace ML.NET.App.PacMan.Model
                         case 2: // Coin
                             this.Coins.Add(new Coin(new Position(j, i)));
                             break;
-
+                        case 3: // Ennemy
+                            this.Ennemies.Add(new Ennemy(new Position(j, i)));
+                            break;
                     }
                 }
             }
+
+            this.CurrentAgent.Activate();
 
             this.startTime = DateTime.Now;
         }
@@ -110,13 +129,15 @@ namespace ML.NET.App.PacMan.Model
             this.IsStopped = true;
             this.GameCompleted?.Invoke(this, null);
         }
-        public const int SIZE = 14;
-        const int NB_COINS = 16;
+        public const int SIZE = 13;
+        //const int NB_COINS = 8;
+        const int NB_ENNEMIES = 0;
 
         public int[,] Values = new int[SIZE, SIZE];
 
         public List<Coin> Coins = new List<Coin>();
         public List<Wall> Walls = new List<Wall>();
+        public List<Ennemy> Ennemies = new List<Ennemy>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -230,9 +251,48 @@ namespace ML.NET.App.PacMan.Model
                 this.Stop();
             }
         }
+        private void EatEnnemy(Position p)
+        {
+            // Remove from world map
+            this.Values[p.Y, p.X] = 0;
+
+            // Remove from coin list
+            var ennemy = this.Ennemies.First(c => c.Position.X == p.X && c.Position.Y == p.Y);
+            this.Ennemies.Remove(ennemy);
+
+            // Remove from render
+            GameObject.Renderer.Remove(ennemy);
+
+            this.Score += 20;
+
+            if (this.Coins.Count == 0)
+            {
+                this.Stop();
+            }
+        }
 
         internal bool CanGoTo(Position p)
         {
+            return this.Values[p.Y, p.X] != 1;
+        }
+        internal bool CanGo(PlayAction action)
+        {
+            Position p = new Position(Pacman.Position);
+            switch (action)
+            {
+                case PlayAction.Up:
+                    p.Y -= 1;
+                    break;
+                case PlayAction.Down:
+                    p.Y += 1;
+                    break;
+                case PlayAction.Left:
+                    p.X -= 1;
+                    break;
+                case PlayAction.Right:
+                    p.X += 1;
+                    break;
+            }
             return this.Values[p.Y, p.X] != 1;
         }
     };

@@ -24,29 +24,30 @@ namespace ML.NET.App.PacMan.View
             {
                 this.Draw(coin);
             }
+            foreach (var ennemy in world.Ennemies)
+            {
+                this.Draw(ennemy);
+            }
             this.Draw(world.Pacman);
         }
-
         public void Clear()
         {
             this.canvas.Children.Clear();
         }
-
-        public void Draw(GameObject go)
+        public void Draw(IGameObject go)
         {
             Canvas.SetLeft(go.Element, go.Position.X * SPRITE_SIZE);
             Canvas.SetTop(go.Element, go.Position.Y * SPRITE_SIZE);
             this.canvas.Children.Add(go.Element);
         }
-        public void Move(GameObject go)
+        public void Move(IGameObject go)
         {
             Canvas.SetLeft(go.Element, go.Position.X * SPRITE_SIZE);
             Canvas.SetTop(go.Element, go.Position.Y * SPRITE_SIZE);
         }
-
-        internal void Remove(Coin coin)
+        internal void Remove(IGameObject gameObject)
         {
-            this.canvas.Children.Remove(coin.Element);
+            this.canvas.Children.Remove(gameObject.Element);
         }
     }
 }

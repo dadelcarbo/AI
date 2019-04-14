@@ -21,39 +21,23 @@ namespace ML.NET.App.PacMan.Model
         private static string coinPath = @"PacMan\Images\Coin.png";
         private static string pacmanPath = @"PacMan\Images\PacMan.png";
         private static string wallPath = @"PacMan\Images\Wall.png";
+        private static string ennemyPath = @"PacMan\Images\Ennemy.png";
+        public static Image ParseEnnemy()
+        {
+            return Parse(ennemyPath);
+        }
 
         public static Image ParseCoin()
         {
-            var coinImage = new Image();
-            var uri = new Uri(coinPath, UriKind.RelativeOrAbsolute);
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = uri;
-            bitmap.EndInit();
-            coinImage.Source = bitmap;
-            return coinImage;
+            return Parse(coinPath);
         }
         public static Image ParsePacman()
         {
-            var pacmanImage = new Image();
-            var uri = new Uri(pacmanPath, UriKind.RelativeOrAbsolute);
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = uri;
-            bitmap.EndInit();
-            pacmanImage.Source = bitmap;
-            return pacmanImage;
+            return Parse(pacmanPath);
         }
         public static Image ParseWall()
         {
-            var wallImage = new Image();
-            var uri = new Uri(wallPath, UriKind.RelativeOrAbsolute);
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = uri;
-            bitmap.EndInit();
-            wallImage.Source = bitmap;
-            return wallImage;
+            return Parse(wallPath);
         }
 
     }

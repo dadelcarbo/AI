@@ -1,5 +1,8 @@
-﻿namespace ML.NET.App.PacMan.Model
+﻿using System.Diagnostics;
+
+namespace ML.NET.App.PacMan.Model
 {
+    [DebuggerDisplay("X={X} Y={Y}")]
     public struct Position
     {
         public Position(int x, int y)
@@ -41,6 +44,11 @@
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"X={X} Y={Y}";
         }
     }
 }

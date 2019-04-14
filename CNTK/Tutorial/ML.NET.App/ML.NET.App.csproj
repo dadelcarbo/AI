@@ -95,14 +95,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PacMan\Agents\DijkstraAgent.cs" />
     <Compile Include="PacMan\Agents\EuristicAgent.cs" />
+    <Compile Include="PacMan\Agents\Graph\Graph.cs" />
+    <Compile Include="PacMan\Agents\Graph\INode.cs" />
+    <Compile Include="PacMan\Agents\Graph\Link.cs" />
+    <Compile Include="PacMan\Agents\Graph\Node.cs" />
     <Compile Include="PacMan\Agents\IAgent.cs" />
     <Compile Include="PacMan\Agents\KeyboardAgent.cs" />
     <Compile Include="PacMan\Agents\MLAgent.cs" />
     <Compile Include="PacMan\Agents\RandomAgent.cs" />
     <Compile Include="PacMan\Agents\State.cs" />
+    <Compile Include="PacMan\Model\Ennemy.cs" />
     <Compile Include="PacMan\Model\Pacman.cs" />
     <Compile Include="PacMan\Model\PlayAction.cs" />
+    <Compile Include="PacMan\Model\Void.cs" />
     <Compile Include="PacMan\Model\Wall.cs" />
     <Compile Include="PacMan\Model\Coin.cs" />
     <Compile Include="PacMan\Model\GameObject.cs" />
@@ -137,12 +144,15 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="PacMan\Images\Ennemy.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="PacMan\Images\Coin.png" />
     <Resource Include="PacMan\Images\PacMan.png" />
     <Resource Include="PacMan\Images\Wall.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\CNTK.Deps.MKL.2.6.0\build\netstandard2.0\CNTK.Deps.MKL.targets" Condition="Exists('packages\CNTK.Deps.MKL.2.6.0\build\netstandard2.0\CNTK.Deps.MKL.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

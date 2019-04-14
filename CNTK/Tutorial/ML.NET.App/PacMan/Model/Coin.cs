@@ -2,7 +2,7 @@
 {
     public class Coin : GameObject, IGameObject
     {
-        public override int ClassId => 2;
+        public override int ClassId => CoinId;
 
         public Coin(Position position)
         {
