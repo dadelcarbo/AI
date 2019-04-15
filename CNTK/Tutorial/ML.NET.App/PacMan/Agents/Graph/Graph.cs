@@ -58,6 +58,40 @@ namespace ML.NET.App.PacMan.Agents.Graph
         public List<INode<T>> FindShortestRoute(INode<T> startNode, INode<T> endNode)
         {
             startNode.IsVisited = true;
+            var routes = new List<List<INode<T>>>() { new List<INode<T>>() { startNode } };
+            var newRoutes = new List<List<INode<T>>>();
+            bool found = false, possible = true;
+            while (!found && possible)
+            {
+                newRoutes.Clear();
+                possible = false;
+                foreach (var route in routes)
+                {
+                    var node = route.Last();
+                    foreach (var n in node.Nodes)
+                    {
+                        if (!n.IsVisited)
+                        {
+                            var newRoute = new List<INode<T>>(route);
+                            newRoute.Add(n);
+                            if (n == endNode)
+                            {
+                                return newRoute;
+                            }
+                            possible = true;
+                            node.IsVisited = true;
+                            newRoutes.Add(newRoute);
+                        }
+                    }
+                }
+                routes.Clear();
+                routes.AddRange(newRoutes);
+            }
+            return null;
+        }
+        public List<INode<T>> FindShortestRoute2(INode<T> startNode, INode<T> endNode)
+        {
+            startNode.IsVisited = true;
             bool allVisited = true;
             foreach (var n in startNode.Nodes.Where(n => !n.IsVisited))
             {
@@ -76,7 +110,7 @@ namespace ML.NET.App.PacMan.Agents.Graph
             {
                 if (n.IsVisited)
                     continue;
-                var path = FindShortestRoute(n, endNode);
+                var path = FindShortestRoute2(n, endNode);
                 if (path == null)
                     continue;
                 if (shortestPath == null || shortestPath.Count > path.Count)

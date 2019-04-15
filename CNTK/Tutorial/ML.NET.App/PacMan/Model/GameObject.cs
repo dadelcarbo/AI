@@ -12,7 +12,7 @@ namespace ML.NET.App.PacMan.Model
 
         public static World World { get; set; }
         public static GameRenderer Renderer { get; set; }
-        public Position Position { get; protected set; }
+        public Position Position { get; set; }
         public UIElement Element { get; protected set; }
         public abstract int ClassId { get; }
     }

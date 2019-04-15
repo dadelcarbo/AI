@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 
 namespace ML.NET.App.PacMan.Model
@@ -24,7 +25,7 @@ namespace ML.NET.App.PacMan.Model
             }
         }
 
-        public Pacman Pacman = new Pacman(new Position(SIZE / 2, SIZE / 2));
+        public Pacman Pacman = new Pacman(new Position(1, 1));
         private World()
         {
         }
@@ -39,7 +40,7 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(this.currentAgent = new DijkstraAgent());
             this.Agents.Add(new MLAgent());
 
-            this.Start();
+            this.Start(1);
         }
 
         public event EventHandler GameCompleted;
@@ -47,51 +48,73 @@ namespace ML.NET.App.PacMan.Model
 
         DateTime startTime;
 
-        public void Start()
+        public void Start(int level)
         {
             this.IsStopped = false;
             this.Score = 0;
             this.Duration = 0;
 
-            for (int i = 0; i < SIZE; i++)
+            if (level == 0)
             {
-                for (int j = 0; j < SIZE; j++)
+                for (int i = 0; i < SIZE; i++)
                 {
-                    this.Values[i, j] = 0;
+                    for (int j = 0; j < SIZE; j++)
+                    {
+                        this.Values[i, j] = 0;
+                    }
+                }
+                // Create borders
+                for (int i = 0; i < SIZE; i++)
+                {
+                    this.Values[i, 0] = 1;
+                    this.Values[0, i] = 1;
+                    this.Values[i, SIZE - 1] = 1;
+                    this.Values[SIZE - 1, i] = 1;
+                }
+                for (int i = 2; i < SIZE; i++)
+                {
+                    this.Values[SIZE / 2, i] = 1;
+                }
+                for (int i = 2; i < SIZE - 2; i++)
+                {
+                    this.Values[i, 2] = 1;
+                }
+
+                // Create Coins
+                for (int i = 0; i < NB_COINS;)
+                {
+                    int x = rnd.Next(1, SIZE - 2);
+                    int y = rnd.Next(1, SIZE - 2);
+                    if (this.Values[x, y] != 0) continue;
+
+                    this.Values[x, y] = 2;
+                    i++;
+                }
+                // Create Ennemies
+                for (int i = 0; i < NB_ENNEMIES;)
+                {
+                    int x = rnd.Next(1, SIZE - 2);
+                    int y = rnd.Next(1, SIZE - 2);
+                    if (this.Values[x, y] == 3) continue;
+
+                    this.Values[x, y] = 3;
+                    i++;
                 }
             }
-            // Create borders
-            for (int i = 0; i < SIZE; i++)
+            else
             {
-                this.Values[i, 0] = 1;
-                this.Values[0, i] = 1;
-                this.Values[i, SIZE - 1] = 1;
-                this.Values[SIZE - 1, i] = 1;
-            }
-            for (int i = 2; i < SIZE; i++)
-            {
-                this.Values[SIZE / 2, i] = 1;
-            }
+                var filePath = $"PacMan\\Level\\Level{level}.txt";
 
-            // Create Coins
-            for (int i = 0; i < NB_COINS;)
-            {
-                int x = rnd.Next(1, SIZE - 2);
-                int y = rnd.Next(1, SIZE - 2);
-                if (this.Values[x, y] != 0) continue;
-
-                this.Values[x, y] = 2;
-                i++;
-            }
-            // Create Ennemies
-            for (int i = 0; i < NB_ENNEMIES;)
-            {
-                int x = rnd.Next(1, SIZE - 2);
-                int y = rnd.Next(1, SIZE - 2);
-                if (this.Values[x, y] == 3) continue;
-
-                this.Values[x, y] = 3;
-                i++;
+                // Read a text file line by line.  
+                string[] lines = File.ReadAllLines(filePath);
+                for (int i = 0; i < SIZE; i++)
+                {
+                    var items = lines[i].Split(',');
+                    for (int j = 0; j < SIZE; j++)
+                    {
+                        this.Values[i, j] = int.Parse(items[j]);
+                    }
+                }
             }
 
             this.Walls.Clear();
@@ -113,6 +136,9 @@ namespace ML.NET.App.PacMan.Model
                         case 3: // Ennemy
                             this.Ennemies.Add(new Ennemy(new Position(j, i)));
                             break;
+                        case 9: // Ennemy
+                            this.Pacman.Position = new Position(j, i);
+                            break;
                     }
                 }
             }
@@ -130,7 +156,7 @@ namespace ML.NET.App.PacMan.Model
             this.GameCompleted?.Invoke(this, null);
         }
         public const int SIZE = 13;
-        //const int NB_COINS = 8;
+        const int NB_COINS = 8;
         const int NB_ENNEMIES = 0;
 
         public int[,] Values = new int[SIZE, SIZE];
