@@ -92,5 +92,18 @@ namespace ML.NET.App
 
             this.timer.Start();
         }
+
+        private void ShowGraph_Button_Click(object sender, RoutedEventArgs e)
+        {
+            world.IsStopped = true;
+            timer.Stop();
+
+            var agent = new DijkstraAgent();
+            agent.Activate();
+
+            GameObject.Renderer.Clear();
+            GameObject.Renderer.DrawGraph(agent.Graph);
+
+        }
     }
 }

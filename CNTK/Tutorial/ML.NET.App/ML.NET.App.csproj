@@ -95,6 +95,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PacMan\Agents\GreedyAgent.cs" />
     <Compile Include="PacMan\Agents\DijkstraAgent.cs" />
     <Compile Include="PacMan\Agents\EuristicAgent.cs" />
     <Compile Include="PacMan\Agents\Graph\Graph.cs" />

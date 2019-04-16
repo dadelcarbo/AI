@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace ML.NET.App.PacMan.Agents
 {
-    public class DijkstraAgent : IAgent
+    public class GreedyAgent : IAgent
     {
-        public string Name => "Dijkstra Agent";
+        public string Name => "Greedy Agent";
 
         public Graph<Position> Graph { get; set; }
 

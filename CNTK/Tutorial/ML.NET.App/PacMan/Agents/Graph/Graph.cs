@@ -4,6 +4,11 @@ using System.Linq;
 
 namespace ML.NET.App.PacMan.Agents.Graph
 {
+    public enum SearchAlgorithm
+    {
+        Dijkstra,
+        Greedy
+    }
     public class Graph<T>
     {
         public List<INode<T>> Nodes { get; set; }
@@ -33,7 +38,7 @@ namespace ML.NET.App.PacMan.Agents.Graph
             node2.Nodes.Add(node1);
         }
 
-        public List<INode<T>> FindShortestRoute(T start, T end)
+        public List<INode<T>> FindShortestRoute(T start, T end, SearchAlgorithm algo)
         {
             // Reset Visited 
             foreach (var n in this.Nodes)
@@ -51,11 +56,25 @@ namespace ML.NET.App.PacMan.Agents.Graph
             {
                 throw new ArgumentException("Start node not found !");
             }
+            switch (algo)
+            {
+                case SearchAlgorithm.Dijkstra:
+                    return FindShortestRoute_Dijkstra(startNode, endNode);
+                case SearchAlgorithm.Greedy:
 
-            return FindShortestRoute(startNode, endNode);
+                    var route = new Stack<INode<T>>();
+                    route.Push(startNode);
+
+                    bool found = FindShortestRoute_Greedy(endNode, route);
+
+                    return found ? shortestRoute.ToList() : null;
+                default:
+                    throw new NotImplementedException($"Algorithm {algo} is not implemented");
+            }
+
         }
 
-        public List<INode<T>> FindShortestRoute(INode<T> startNode, INode<T> endNode)
+        public List<INode<T>> FindShortestRoute_Dijkstra(INode<T> startNode, INode<T> endNode)
         {
             startNode.IsVisited = true;
             var routes = new List<List<INode<T>>>() { new List<INode<T>>() { startNode } };
@@ -89,6 +108,40 @@ namespace ML.NET.App.PacMan.Agents.Graph
             }
             return null;
         }
+
+        List<INode<T>> shortestRoute = null;
+
+        public bool FindShortestRoute_Greedy(INode<T> endNode, Stack<INode<T>> route)
+        {
+            bool found = false;
+
+            INode<T> startNode = route.Peek();
+            found = false;
+            if (startNode.Nodes.Contains(endNode))
+            {
+                found = true;
+                route.Push(endNode);
+                return true;
+            }
+            foreach (var n in startNode.Nodes)
+            {
+                if (!route.Contains(n) && (shortestRoute == null || shortestRoute.Count > route.Count))
+                {
+                    route.Push(n);
+                    if (FindShortestRoute_Greedy(endNode, route))
+                    {
+                        if (shortestRoute == null || shortestRoute.Count > route.Count)
+                        {
+                            shortestRoute = route.ToList();
+                            found = true;
+                        }
+                    }
+                    route.Pop();
+                }
+            }
+            return found;
+        }
+
         public List<INode<T>> FindShortestRoute2(INode<T> startNode, INode<T> endNode)
         {
             startNode.IsVisited = true;

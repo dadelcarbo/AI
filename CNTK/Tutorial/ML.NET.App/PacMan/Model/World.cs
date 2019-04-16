@@ -38,6 +38,7 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(new RandomAgent());
             this.Agents.Add(new EuristicAgent());
             this.Agents.Add(this.currentAgent = new DijkstraAgent());
+            this.Agents.Add(new GreedyAgent());
             this.Agents.Add(new MLAgent());
 
             this.Start(1);
@@ -100,6 +101,18 @@ namespace ML.NET.App.PacMan.Model
                     this.Values[x, y] = 3;
                     i++;
                 }
+            bool ok = false;
+            do
+            {
+                int i = rnd.Next(1, SIZE - 2);
+                int j = rnd.Next(1, SIZE - 2);
+                if (this.Values[i, j] == 0)
+                {
+                    ok = true;
+                    this.Pacman.Position = new Position(j, i);
+                }
+            }
+            while (!ok);
             }
             else
             {
@@ -136,7 +149,7 @@ namespace ML.NET.App.PacMan.Model
                         case 3: // Ennemy
                             this.Ennemies.Add(new Ennemy(new Position(j, i)));
                             break;
-                        case 9: // Ennemy
+                        case 9: // Pacman
                             this.Pacman.Position = new Position(j, i);
                             break;
                     }
