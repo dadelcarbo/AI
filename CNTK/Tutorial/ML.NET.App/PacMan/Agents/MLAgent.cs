@@ -70,6 +70,9 @@ namespace ML.NET.App.PacMan.Agents
             {
                 Trace.WriteLine($"Train batch");
 
+                // Convert states into minibatch
+
+                // Apply learning
 
                 states.Clear();
             }

@@ -86,7 +86,7 @@ namespace ML.NET.App
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.world.Start(1);
+            this.world.Start();
             GameObject.Renderer.Clear();
             GameObject.Renderer.DrawWorld(world);
 

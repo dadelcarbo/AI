@@ -37,11 +37,11 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(new KeyboardAgent());
             this.Agents.Add(new RandomAgent());
             this.Agents.Add(new EuristicAgent());
-            this.Agents.Add(this.currentAgent = new DijkstraAgent());
+            this.Agents.Add(new DijkstraAgent());
             this.Agents.Add(new GreedyAgent());
-            this.Agents.Add(new MLAgent());
+            this.Agents.Add(this.currentAgent = new MLAgent());
 
-            this.Start(1);
+            this.Start();
         }
 
         public event EventHandler GameCompleted;
@@ -49,13 +49,13 @@ namespace ML.NET.App.PacMan.Model
 
         DateTime startTime;
 
-        public void Start(int level)
+        public void Start()
         {
             this.IsStopped = false;
             this.Score = 0;
             this.Duration = 0;
 
-            if (level == 0)
+            if (currentLevel == 0)
             {
                 for (int i = 0; i < SIZE; i++)
                 {
@@ -79,6 +79,7 @@ namespace ML.NET.App.PacMan.Model
                 for (int i = 2; i < SIZE - 2; i++)
                 {
                     this.Values[i, 2] = 1;
+                    this.Values[i, 8] = 1;
                 }
 
                 // Create Coins
@@ -101,22 +102,22 @@ namespace ML.NET.App.PacMan.Model
                     this.Values[x, y] = 3;
                     i++;
                 }
-            bool ok = false;
-            do
-            {
-                int i = rnd.Next(1, SIZE - 2);
-                int j = rnd.Next(1, SIZE - 2);
-                if (this.Values[i, j] == 0)
+                bool ok = false;
+                do
                 {
-                    ok = true;
-                    this.Pacman.Position = new Position(j, i);
+                    int i = rnd.Next(1, SIZE - 2);
+                    int j = rnd.Next(1, SIZE - 2);
+                    if (this.Values[i, j] == 0)
+                    {
+                        ok = true;
+                        this.Pacman.Position = new Position(j, i);
+                    }
                 }
-            }
-            while (!ok);
+                while (!ok);
             }
             else
             {
-                var filePath = $"PacMan\\Level\\Level{level}.txt";
+                var filePath = $"PacMan\\Level\\Level{currentLevel}.txt";
 
                 // Read a text file line by line.  
                 string[] lines = File.ReadAllLines(filePath);
@@ -250,6 +251,23 @@ namespace ML.NET.App.PacMan.Model
                     currentAgent = value;
                     currentAgent.Activate();
                     this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentAgent"));
+                }
+            }
+        }
+
+        private static List<int> levels = new List<int> { 0, 1, 2, 3, 4, 5 };
+        public List<int> Levels => levels;
+
+        int currentLevel = 0;
+        public int CurrentLevel
+        {
+            get => currentLevel;
+            set
+            {
+                if (currentLevel != value)
+                {
+                    currentLevel = value;
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentLevel"));
                 }
             }
         }
