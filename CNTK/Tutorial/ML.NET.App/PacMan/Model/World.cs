@@ -28,6 +28,7 @@ namespace ML.NET.App.PacMan.Model
         public Pacman Pacman = new Pacman(new Position(1, 1));
         private World()
         {
+            this.currentLevel = 4;
         }
 
         private void Initialize()
@@ -170,6 +171,7 @@ namespace ML.NET.App.PacMan.Model
             this.GameCompleted?.Invoke(this, null);
         }
         public const int SIZE = 13;
+        public const int PLAY_ACTION_COUNT = 5;
         const int NB_COINS = 8;
         const int NB_ENNEMIES = 0;
 

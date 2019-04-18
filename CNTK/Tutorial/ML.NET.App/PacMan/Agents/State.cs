@@ -5,10 +5,11 @@ using System.Diagnostics;
 namespace ML.NET.App.PacMan.Agents
 {
     [DebuggerDisplay("Reward={Reward} Action={Action}")]
-    struct State
+    class State
     {
-        public Value Value;
-        public int Reward;
+        public float[] Value;
+        public float Reward;
         public PlayAction Action;
+        public float[] ExpectedActions;
     }
 }

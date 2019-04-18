@@ -195,6 +195,36 @@ namespace ML.NET.App.CNTKHelper
                 Trace.WriteLine($"{functionName} dim0: {shape[0]}");
             }
         }
+        /// <summary>
+        /// Return the index of the maximum in the parameter
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static int ArgMax(float[] array)
+        {
+            int maxIndex = 0;
+            float max = array[0];
+            for (int i = 1; i < array.Length; i++)
+            {
+                if (array[i] > max)
+                {
+                    maxIndex = i;
+                    max = array[i];
+                }
+            }
+            return maxIndex;
+        }
+        /// <summary>
+        /// Create a one hot encoded float array
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static float[] OneHot(int value, int size, float ratio = 1.0f)
+        {
+            var array = new float[size];
+            array[value] = ratio;
+            return array;
+        }
     }
-
 }

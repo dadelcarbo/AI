@@ -15,6 +15,12 @@ namespace ML.NET.App.PacMan.Agents
         DeviceDescriptor device = DeviceDescriptor.CPUDevice;
         Dictionary<Variable, Value> inputDataMap;
         Dictionary<Variable, Value> outputDataMap;
+
+        Dictionary<Variable, Value> inputTrainBatch;
+        Dictionary<Variable, Value> outputTrainBatch;
+
+        Trainer trainer;
+
         Variable inputVariable;
 
         Random rnd = new Random();
@@ -33,6 +39,20 @@ namespace ML.NET.App.PacMan.Agents
             inputVariable = model.Arguments.First(a => a.IsInput);
             inputDataMap = new Dictionary<Variable, Value>() { { inputVariable, null } };
             outputDataMap = new Dictionary<Variable, Value>() { { model.Output, null } };
+
+            inputTrainBatch = new Dictionary<Variable, Value>() { { inputVariable, null } };
+            outputTrainBatch = new Dictionary<Variable, Value>() { { model.Output, null } };
+
+
+            // set per sample learning rate
+            CNTK.TrainingParameterScheduleDouble learningRatePerSample = new CNTK.TrainingParameterScheduleDouble(0.003125, 1);
+
+            var actions = CNTKLib.InputVariable(new int[] { World.PLAY_ACTION_COUNT }, DataType.Float, "Actions");
+            var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(new Variable(model), actions, "lossFunction");
+            var prediction = CNTKLib.ClassificationError(new Variable(model), actions, "classificationError");
+
+            IList<Learner> parameterLearners = new List<Learner>() { Learner.SGDLearner(model.Parameters(), learningRatePerSample) };
+            trainer = Trainer.CreateTrainer(model, trainingLoss, prediction, parameterLearners);
         }
         public void Activate()
         {
@@ -58,6 +78,7 @@ namespace ML.NET.App.PacMan.Agents
 
         private int previousScore = 0;
         private int batchSize = 10;
+        private float decay = 0.9f;
         private void OnWorldMovePerformed(World world, PlayAction action)
         {
             // Calculate reward
@@ -65,15 +86,45 @@ namespace ML.NET.App.PacMan.Agents
             previousScore = world.Score;
             //Trace.WriteLine($"OnWorldMovePerformed => {action} Reward = {state.Reward}");
 
-            states.Add(state);
+            states.Insert(0, state);
             if (states.Count >= batchSize)
             {
                 Trace.WriteLine($"Train batch");
 
-                // Convert states into minibatch
+                // Calculate reward and expected output
+                float reward = 0;
+                var values = new float[states.First().Value.Length * states.Count];
+                var actions = new float[World.PLAY_ACTION_COUNT * states.Count];
+                int i = 0;
+                foreach (var state in states)
+                {
+                    state.Value.CopyTo(values, i * state.Value.Length);
+
+                    reward = decay * reward + state.Reward;
+
+                    Trace.WriteLine($"Train batch - Reward: {reward}");
+                    var expectedActions = CNTKHelper.CNTKHelper.OneHot((int)state.Action, World.PLAY_ACTION_COUNT, reward);
+                    expectedActions.CopyTo(actions, i * World.PLAY_ACTION_COUNT);
+
+                    i++;
+                }
+
+                // Create Minibatches
+                var inputs = Value.CreateBatch<float>(model.Arguments[0].Shape, values, device);
+                var inputMinibatch = new MinibatchData(inputs);
+
+                var outputs = Value.CreateBatch<float>(model.Output.Shape, actions, device);
+                var outputMinibatch = new MinibatchData(outputs);
 
                 // Apply learning
+                var arguments = new Dictionary<Variable, MinibatchData>
+                {
+                    { inputVariable, inputMinibatch },
+                    { model, outputMinibatch }
+                };
+                trainer.TrainMinibatch(arguments, device);
 
+                // Go for next 
                 states.Clear();
             }
         }
@@ -89,7 +140,7 @@ namespace ML.NET.App.PacMan.Agents
             {
                 // Trace.WriteLine("Calculated Action");
 
-                inputDataMap[inputVariable] = worldValue;
+                inputDataMap[inputVariable] = Value.CreateBatch<float>(model.Arguments[0].Shape, worldValue, device);
                 outputDataMap[model.Output] = null;
 
                 model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
@@ -97,16 +148,7 @@ namespace ML.NET.App.PacMan.Agents
                 var output = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
 
                 // Convert output to PlayAction
-                int maxIndex = 0;
-                float max = output[0];
-                for (int i = 1; i < output.Length; i++)
-                {
-                    if (output[i] > max)
-                    {
-                        maxIndex = i;
-                        max = output[i];
-                    }
-                }
+                int maxIndex = CNTKHelper.CNTKHelper.ArgMax(output);
 
                 action = (PlayAction)maxIndex;
             }
@@ -124,7 +166,7 @@ namespace ML.NET.App.PacMan.Agents
             return action;
         }
 
-        private Value WorldToValue()
+        private float[] WorldToValue()
         {
             var worldValues = World.Instance.Values;
             int worldSurface = World.SIZE * World.SIZE;
@@ -149,7 +191,7 @@ namespace ML.NET.App.PacMan.Agents
             var p = World.Instance.Pacman.Position;
             values[worldSurface * 2 + p.Y * World.SIZE + p.X] = 1;
 
-            return Value.CreateBatch<float>(model.Arguments[0].Shape, values, device);
+            return values;
         }
 
     }
