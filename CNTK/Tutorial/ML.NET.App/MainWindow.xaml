@@ -6,36 +6,41 @@
         xmlns:local="clr-namespace:ML.NET.App"
         xmlns:model="clr-namespace:ML.NET.App.PacMan.Model"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="500"
+        Title="MainWindow" Height="600" Width="600"
         d:DataContext="{d:DesignInstance Type=model:World, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="0,0,-36,-54">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3,3,60,3" HorizontalAlignment="Right">
             <Label>Agent</Label>
             <ComboBox Name="AgentComboBox" ItemsSource="{Binding Agents}" SelectedItem="{Binding CurrentAgent}" DisplayMemberPath="Name" Width="160"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3,3,60,3" HorizontalAlignment="Right">
             <Label>Level</Label>
             <ComboBox Name="LevelComboBox" ItemsSource="{Binding Levels}" SelectedItem="{Binding CurrentLevel}" Width="160"/>
         </StackPanel>
         
         <Canvas Grid.Row="2" Name="GameCanvas" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Height="270" Width="270"/>
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-            <Button FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5" Click="ShowGraph_Button_Click">Graph</Button>
-            <Button FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5" Click="Button_Click" Visibility="{Binding IsStopped, Converter={StaticResource BooleanToVisibilityConverter}}">Start</Button>
-            
             <Label FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5">Score</Label>
             <Label FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Content="{Binding Score}" Width="60" Margin="5"/>
             <Label FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5">Time</Label>
             <Label FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Content="{Binding DurationString}" Width="80" Margin="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="3" HorizontalAlignment="Left">
+            <Button FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5" Click="ShowGraph_Button_Click">Graph</Button>
+            <Button FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5" Click="Stop_ButtonClick">Stop</Button>
+            <Button FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5" Click="Start_ButtonClick" Visibility="{Binding IsStopped, Converter={StaticResource BooleanToVisibilityConverter}}">Start</Button>
+            <Slider FontSize="18" FontWeight="Bold" FontFamily="Showcard Gothic" Margin="5" Value="{Binding Epsilon}" Minimum="0" Maximum="100" Width="200"></Slider>
+            <Label Margin="5" Content="{Binding Epsilon}"></Label>
         </StackPanel>
     </Grid>
 </Window>

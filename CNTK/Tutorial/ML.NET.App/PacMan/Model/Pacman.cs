@@ -26,10 +26,17 @@
                 case PlayAction.Right:
                     newPosition.X += 1;
                     break;
+                case PlayAction.NOP:
+                    World.Instance.Score -= 1;
+                    break;
             }
             if (World.CanGoTo(newPosition))
             {
                 World.GoTo(newPosition);
+            }
+            else
+            {
+                World.Instance.Score-=1;
             }
         }
 

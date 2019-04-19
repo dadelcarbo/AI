@@ -22,10 +22,9 @@ namespace ML.NET.App.PacMan.Agents
         Trainer trainer;
 
         Variable inputVariable;
+        Variable actionVariable;
 
         Random rnd = new Random();
-
-        int epsilon = 50; // Percentage of random action
 
         List<State> states = new List<State>();
         public MLAgent()
@@ -43,13 +42,12 @@ namespace ML.NET.App.PacMan.Agents
             inputTrainBatch = new Dictionary<Variable, Value>() { { inputVariable, null } };
             outputTrainBatch = new Dictionary<Variable, Value>() { { model.Output, null } };
 
-
             // set per sample learning rate
             CNTK.TrainingParameterScheduleDouble learningRatePerSample = new CNTK.TrainingParameterScheduleDouble(0.003125, 1);
 
-            var actions = CNTKLib.InputVariable(new int[] { World.PLAY_ACTION_COUNT }, DataType.Float, "Actions");
-            var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(new Variable(model), actions, "lossFunction");
-            var prediction = CNTKLib.ClassificationError(new Variable(model), actions, "classificationError");
+            actionVariable = CNTKLib.InputVariable(new int[] { World.PLAY_ACTION_COUNT }, DataType.Float, "Actions");
+            var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(new Variable(model), actionVariable, "lossFunction");
+            var prediction = CNTKLib.ClassificationError(new Variable(model), actionVariable, "classificationError");
 
             IList<Learner> parameterLearners = new List<Learner>() { Learner.SGDLearner(model.Parameters(), learningRatePerSample) };
             trainer = Trainer.CreateTrainer(model, trainingLoss, prediction, parameterLearners);
@@ -72,7 +70,6 @@ namespace ML.NET.App.PacMan.Agents
             Trace.WriteLine("OnGameCompleted");
             previousScore = 0;
 
-
             states.Clear();
         }
 
@@ -87,8 +84,9 @@ namespace ML.NET.App.PacMan.Agents
             //Trace.WriteLine($"OnWorldMovePerformed => {action} Reward = {state.Reward}");
 
             states.Insert(0, state);
-            if (states.Count >= batchSize)
+            if (state.Reward != 0 && states.Count >= batchSize)
             {
+                states = states.Take(batchSize).ToList();
                 Trace.WriteLine($"Train batch");
 
                 // Calculate reward and expected output
@@ -102,8 +100,9 @@ namespace ML.NET.App.PacMan.Agents
 
                     reward = decay * reward + state.Reward;
 
-                    Trace.WriteLine($"Train batch - Reward: {reward}");
-                    var expectedActions = CNTKHelper.CNTKHelper.OneHot((int)state.Action, World.PLAY_ACTION_COUNT, reward);
+                    Trace.WriteLine($"Train batch - Action: {state.Action} Reward: {reward}");
+                    
+                    var expectedActions = CNTKHelper.CNTKHelper.SoftMax(CNTKHelper.CNTKHelper.OneHot((int)state.Action, World.PLAY_ACTION_COUNT, reward));
                     expectedActions.CopyTo(actions, i * World.PLAY_ACTION_COUNT);
 
                     i++;
@@ -111,19 +110,26 @@ namespace ML.NET.App.PacMan.Agents
 
                 // Create Minibatches
                 var inputs = Value.CreateBatch<float>(model.Arguments[0].Shape, values, device);
-                var inputMinibatch = new MinibatchData(inputs);
+                var inputMinibatch = new MinibatchData(inputs, (uint)states.Count());
 
                 var outputs = Value.CreateBatch<float>(model.Output.Shape, actions, device);
-                var outputMinibatch = new MinibatchData(outputs);
+                var outputMinibatch = new MinibatchData(outputs, (uint)states.Count());
 
                 // Apply learning
+
                 var arguments = new Dictionary<Variable, MinibatchData>
                 {
                     { inputVariable, inputMinibatch },
-                    { model, outputMinibatch }
+                    { actionVariable, outputMinibatch }
                 };
-                trainer.TrainMinibatch(arguments, device);
+                int epoc = 5;
+                while (epoc > 0)
+                {
+                    trainer.TrainMinibatch(arguments, device);
+                    CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer);
 
+                    epoc--;
+                }
                 // Go for next 
                 states.Clear();
             }
@@ -136,7 +142,8 @@ namespace ML.NET.App.PacMan.Agents
             var worldValue = WorldToValue();
 
             PlayAction action = PlayAction.NOP;
-            if (rnd.Next(100) > epsilon)
+            int odd = rnd.Next(100);
+            if (odd >= world.Epsilon)
             {
                 // Trace.WriteLine("Calculated Action");
 
@@ -149,7 +156,8 @@ namespace ML.NET.App.PacMan.Agents
 
                 // Convert output to PlayAction
                 int maxIndex = CNTKHelper.CNTKHelper.ArgMax(output);
-
+                if (maxIndex == -1)
+                    return PlayAction.NOP;
                 action = (PlayAction)maxIndex;
             }
             else
@@ -191,8 +199,32 @@ namespace ML.NET.App.PacMan.Agents
             var p = World.Instance.Pacman.Position;
             values[worldSurface * 2 + p.Y * World.SIZE + p.X] = 1;
 
+            //for (int i = 0; i < World.SIZE; i++) // i => Y
+            //{
+            //    var dump = string.Empty;
+            //    for (int j = 0; j < World.SIZE; j++) // j => X
+            //    {
+            //        if (values[i * World.SIZE + j] != 0)
+            //        {
+            //            dump += 1;
+            //        }
+            //        else if (values[worldSurface + i * World.SIZE + j] != 0)
+            //        {
+            //            dump += 2;
+            //        }
+            //        else if (values[worldSurface * 2 + i * World.SIZE + j] != 0)
+            //        {
+            //            dump += 9;
+            //        }
+            //        else
+            //        {
+            //            dump += 0;
+            //        }
+            //    }
+            //    Trace.WriteLine(dump);
+            //}
+
             return values;
         }
-
     }
 }

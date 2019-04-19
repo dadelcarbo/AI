@@ -28,7 +28,7 @@ namespace ML.NET.App.PacMan.Model
         public Pacman Pacman = new Pacman(new Position(1, 1));
         private World()
         {
-            this.currentLevel = 4;
+            this.currentLevel = 2;
         }
 
         private void Initialize()
@@ -53,7 +53,7 @@ namespace ML.NET.App.PacMan.Model
         public void Start()
         {
             this.IsStopped = false;
-            this.Score = 0;
+            this.Score = 200;
             this.Duration = 0;
 
             if (currentLevel == 0)
@@ -163,7 +163,25 @@ namespace ML.NET.App.PacMan.Model
             this.startTime = DateTime.Now;
         }
 
-        private void Stop()
+
+        private void CreateCoin(int nbCoins)
+        {
+            // Create Coins
+            for (int i = 0; i < nbCoins;)
+            {
+                int x = rnd.Next(1, SIZE - 2);
+                int y = rnd.Next(1, SIZE - 2);
+                if (this.Values[x, y] != 0) continue;
+
+                this.Values[x, y] = 2;
+                Coin coin = new Coin(new Position(y, x));
+                Coin.Renderer.Draw(coin);
+                this.Coins.Add(coin);                
+                i++;
+            }
+        }
+
+        public void Stop()
         {
             this.Pacman.GoTo(new Position(SIZE / 2, SIZE / 2));
 
@@ -195,6 +213,20 @@ namespace ML.NET.App.PacMan.Model
                 {
                     score = value;
                     this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Score"));
+                }
+            }
+        }
+
+        private int epsilon;
+        public int Epsilon
+        {
+            get => epsilon;
+            set
+            {
+                if (epsilon != value)
+                {
+                    epsilon = value;
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Epsilon"));
                 }
             }
         }
@@ -283,8 +315,8 @@ namespace ML.NET.App.PacMan.Model
                     break;
                 case 1: break;
                 case 2:
-                    this.EatCoin(p);
                     this.Pacman.GoTo(p);
+                    this.EatCoin(p);
                     break;
                 default:
                     break;
@@ -303,13 +335,19 @@ namespace ML.NET.App.PacMan.Model
             // Remove from render
             GameObject.Renderer.Remove(coin);
 
-            this.Score += 20;
+            this.Score += 200;
+
+            if (this.Coins.Count < 10)
+            {
+                CreateCoin(1);
+            }
 
             if (this.Coins.Count == 0)
             {
                 this.Stop();
             }
         }
+
         private void EatEnnemy(Position p)
         {
             // Remove from world map

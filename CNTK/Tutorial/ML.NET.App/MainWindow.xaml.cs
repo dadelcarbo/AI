@@ -36,7 +36,7 @@ namespace ML.NET.App
 
             this.DataContext = world;
             world.PropertyChanged += World_PropertyChanged;
-            timer.Interval = TimeSpan.FromMilliseconds(200);
+            timer.Interval = TimeSpan.FromMilliseconds(0);
             timer.Tick += world.GameLoop;
             timer.Start();
 
@@ -84,13 +84,18 @@ namespace ML.NET.App
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Start_ButtonClick(object sender, RoutedEventArgs e)
         {
             this.world.Start();
             GameObject.Renderer.Clear();
             GameObject.Renderer.DrawWorld(world);
 
             this.timer.Start();
+        }
+        private void Stop_ButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.timer.Stop();
+            this.world.Stop();
         }
 
         private void ShowGraph_Button_Click(object sender, RoutedEventArgs e)

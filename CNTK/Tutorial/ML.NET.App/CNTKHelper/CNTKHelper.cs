@@ -1,6 +1,8 @@
 ﻿using CNTK;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ML.NET.App.CNTKHelper
@@ -171,15 +173,11 @@ namespace ML.NET.App.CNTKHelper
             return CNTKLib.Plus(plusParam, timesFunction, outputName);
         }
 
-
-        public static void PrintTrainingProgress(Trainer trainer, int minibatchIdx, int outputFrequencyInMinibatches)
+        public static void PrintTrainingProgress(Trainer trainer)
         {
-            if ((minibatchIdx % outputFrequencyInMinibatches) == 0 && trainer.PreviousMinibatchSampleCount() != 0)
-            {
-                float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
-                float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
-                Trace.WriteLine($"Minibatch: {minibatchIdx} CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
-            }
+            float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
+            float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
+            Trace.WriteLine($"CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
         }
 
         public static void PrintOutputDims(Function function, string functionName)
@@ -206,10 +204,13 @@ namespace ML.NET.App.CNTKHelper
             float max = array[0];
             for (int i = 1; i < array.Length; i++)
             {
-                if (array[i] > max)
+                var val = array[i];
+                if (float.IsNaN(val))
+                    return -1;
+                if (val > max)
                 {
                     maxIndex = i;
-                    max = array[i];
+                    max = val;
                 }
             }
             return maxIndex;
@@ -224,6 +225,26 @@ namespace ML.NET.App.CNTKHelper
         {
             var array = new float[size];
             array[value] = ratio;
+            return array;
+        }
+        /// <summary>
+        /// Create a one hot encoded float array
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static float[] SoftMax(float[] input)
+        {
+            var array = new float[input.Length];
+            double sum = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                sum += Math.Exp(input[i]);
+            }
+            for (int i = 0; i < input.Length; i++)
+            {
+                array[i]= (float)(Math.Exp(input[i])/sum);
+            }
             return array;
         }
     }
