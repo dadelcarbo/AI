@@ -76,6 +76,8 @@ namespace ML.NET.App.CNTKHelper
             Function dense = CNTKHelper.Dense(scaledInput, hiddenLayerDim, device, Activation.Sigmoid, "");
             // dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
             Function classifierOutput = CNTKHelper.Dense(dense, numOutputClasses, device, Activation.None, classifierName);
+            classifierOutput = CNTKLib.Softmax(classifierOutput);
+
             return classifierOutput;
         }
 

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CNTK;
+using ML.NET.App.PacMan.Model;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using CNTK;
-using ML.NET.App.PacMan.Model;
 
 namespace ML.NET.App.PacMan.Agents
 {
@@ -31,7 +31,7 @@ namespace ML.NET.App.PacMan.Agents
         {
             int inputLayer = 3; // 1 layer for WALLs - Coins - Player
             int inputSize = World.SIZE;
-            int outputSize = Enum.GetValues(typeof(PlayAction)).Length;²
+            int outputSize = Enum.GetValues(typeof(PlayAction)).Length;
 
             var devices = DeviceDescriptor.AllDevices();
             device = devices.Last();
@@ -45,7 +45,7 @@ namespace ML.NET.App.PacMan.Agents
             inputTrainBatch = new Dictionary<Variable, Value>() { { inputVariable, null } };
             outputTrainBatch = new Dictionary<Variable, Value>() { { model.Output, null } };
 
-            // set per sample learning rate
+            // Set per sample learning rate
             CNTK.TrainingParameterScheduleDouble learningRatePerSample = new CNTK.TrainingParameterScheduleDouble(0.003125, 1);
 
             actionVariable = CNTKLib.InputVariable(new int[] { World.PLAY_ACTION_COUNT }, DataType.Float, "Actions");
@@ -77,9 +77,9 @@ namespace ML.NET.App.PacMan.Agents
         }
 
         private int previousScore = 0;
-        private int batchSize = 1;
+        private int batchSize = 3;
         private float decay = 0.9f;
-        private void OnWorldMovePerformed(World world, PlayAction action)
+        public void OnWorldMovePerformed(World world, PlayAction action)
         {
             // Calculate reward
             state.Reward = world.Score - previousScore;
@@ -98,19 +98,25 @@ namespace ML.NET.App.PacMan.Agents
                 var actions = new float[World.PLAY_ACTION_COUNT * states.Count];
                 int i = 0;
 
-                
+
                 inputDataMap[inputVariable] = Value.CreateBatch<float>(model.Arguments[0].Shape, states.First().Value, device);
                 outputDataMap[model.Output] = null;
 
                 model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
 
                 var beforeOutput = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
+
                 float[] expectedActions = null;
                 foreach (var state in states)
                 {
                     state.Value.CopyTo(values, i * state.Value.Length);
 
                     reward = decay * reward + state.Reward;
+
+                    if (reward > 100)
+                    {
+                        Trace.WriteLine("Reward");
+                    }
 
                     Trace.WriteLine($"Train batch - Action: {state.Action} Reward: {reward}");
 
@@ -134,7 +140,7 @@ namespace ML.NET.App.PacMan.Agents
                     { inputVariable, inputMinibatch },
                     { actionVariable, outputMinibatch }
                 };
-                int epoc = 5;
+                int epoc = 3;
                 while (epoc > 0)
                 {
                     trainer.TrainMinibatch(arguments, device);
@@ -151,14 +157,13 @@ namespace ML.NET.App.PacMan.Agents
                 var afterOutput = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
                 Trace.WriteLine("Action  \t" + Enum.GetValues(typeof(PlayAction)).OfType<PlayAction>().Select(p => p.ToString()).Aggregate((a, b) => a + "  \t" + b));
                 Trace.WriteLine("Expected\t" + expectedActions.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
-                Trace.WriteLine("Before  \t" + beforeOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
-                Trace.WriteLine("After   \t" + afterOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
+                Trace.WriteLine("Before  \t" + beforeOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(beforeOutput));
+                Trace.WriteLine("After   \t" + afterOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(afterOutput));
 
                 // Go for next 
                 states.Clear();
             }
         }
-
 
         State state;
         public PlayAction Decide(World world)

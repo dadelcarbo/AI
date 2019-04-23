@@ -10,6 +10,5 @@ namespace ML.NET.App.PacMan.Agents
         public float[] Value;
         public float Reward;
         public PlayAction Action;
-        public float[] ExpectedActions;
     }
 }
