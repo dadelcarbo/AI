@@ -2,7 +2,7 @@
 {
     public class Void : GameObject, IGameObject
     {
-        public override int ClassId => 0;
+        public override int ClassId => VoidId;
         public Void(Position position)
         {
             this.Position = position;

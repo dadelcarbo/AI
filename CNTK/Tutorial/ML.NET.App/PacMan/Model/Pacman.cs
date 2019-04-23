@@ -2,7 +2,7 @@
 {
     public class Pacman : GameObject, IGameObject
     {
-        public override int ClassId => 3;
+        public override int ClassId => PacmanId;
         public Pacman(Position position)
         {
             this.Position = position;

@@ -7,9 +7,9 @@ using ML.NET.App.PacMan.Model;
 
 namespace ML.NET.App.PacMan.Agents
 {
-    public class MLAgent : IAgent
+    public class MLPAgent : IAgent
     {
-        public string Name => "Machine Learning Agent";
+        public string Name => "Perceptron Agent";
 
         Function model;
         DeviceDescriptor device = DeviceDescriptor.CPUDevice;
@@ -27,13 +27,16 @@ namespace ML.NET.App.PacMan.Agents
         Random rnd = new Random();
 
         List<State> states = new List<State>();
-        public MLAgent()
+        public MLPAgent()
         {
             int inputLayer = 3; // 1 layer for WALLs - Coins - Player
             int inputSize = World.SIZE;
-            int outputSize = Enum.GetValues(typeof(PlayAction)).Length;
+            int outputSize = Enum.GetValues(typeof(PlayAction)).Length;²
 
-            model = CNTKHelper.CNTKHelper.CreateCNNModel(device, inputSize, inputLayer, outputSize);
+            var devices = DeviceDescriptor.AllDevices();
+            device = devices.Last();
+
+            model = CNTKHelper.CNTKHelper.CreateMLPModel(device, inputSize, inputLayer, outputSize);
 
             inputVariable = model.Arguments.First(a => a.IsInput);
             inputDataMap = new Dictionary<Variable, Value>() { { inputVariable, null } };
@@ -74,7 +77,7 @@ namespace ML.NET.App.PacMan.Agents
         }
 
         private int previousScore = 0;
-        private int batchSize = 10;
+        private int batchSize = 1;
         private float decay = 0.9f;
         private void OnWorldMovePerformed(World world, PlayAction action)
         {
@@ -94,6 +97,15 @@ namespace ML.NET.App.PacMan.Agents
                 var values = new float[states.First().Value.Length * states.Count];
                 var actions = new float[World.PLAY_ACTION_COUNT * states.Count];
                 int i = 0;
+
+                
+                inputDataMap[inputVariable] = Value.CreateBatch<float>(model.Arguments[0].Shape, states.First().Value, device);
+                outputDataMap[model.Output] = null;
+
+                model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
+
+                var beforeOutput = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
+                float[] expectedActions = null;
                 foreach (var state in states)
                 {
                     state.Value.CopyTo(values, i * state.Value.Length);
@@ -101,8 +113,9 @@ namespace ML.NET.App.PacMan.Agents
                     reward = decay * reward + state.Reward;
 
                     Trace.WriteLine($"Train batch - Action: {state.Action} Reward: {reward}");
-                    
-                    var expectedActions = CNTKHelper.CNTKHelper.SoftMax(CNTKHelper.CNTKHelper.OneHot((int)state.Action, World.PLAY_ACTION_COUNT, reward));
+
+                    expectedActions = CNTKHelper.CNTKHelper.SoftMax(CNTKHelper.CNTKHelper.OneHot((int)state.Action, World.PLAY_ACTION_COUNT, reward));
+
                     expectedActions.CopyTo(actions, i * World.PLAY_ACTION_COUNT);
 
                     i++;
@@ -116,7 +129,6 @@ namespace ML.NET.App.PacMan.Agents
                 var outputMinibatch = new MinibatchData(outputs, (uint)states.Count());
 
                 // Apply learning
-
                 var arguments = new Dictionary<Variable, MinibatchData>
                 {
                     { inputVariable, inputMinibatch },
@@ -126,14 +138,27 @@ namespace ML.NET.App.PacMan.Agents
                 while (epoc > 0)
                 {
                     trainer.TrainMinibatch(arguments, device);
-                    CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer);
 
                     epoc--;
                 }
+                CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer);
+
+                inputDataMap[inputVariable] = Value.CreateBatch<float>(model.Arguments[0].Shape, states.First().Value, device);
+                outputDataMap[model.Output] = null;
+
+                model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
+
+                var afterOutput = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
+                Trace.WriteLine("Action  \t" + Enum.GetValues(typeof(PlayAction)).OfType<PlayAction>().Select(p => p.ToString()).Aggregate((a, b) => a + "  \t" + b));
+                Trace.WriteLine("Expected\t" + expectedActions.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
+                Trace.WriteLine("Before  \t" + beforeOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
+                Trace.WriteLine("After   \t" + afterOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
+
                 // Go for next 
                 states.Clear();
             }
         }
+
 
         State state;
         public PlayAction Decide(World world)

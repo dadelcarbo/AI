@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace ML.NET.App.CNTKHelper
+namespace CNTKSamples
 {
     public enum Activation
     {
@@ -20,20 +20,22 @@ namespace ML.NET.App.CNTKHelper
         /// Create a MLP image classifier for MNIST data.
         /// </summary>
         /// <param name="device">CPU or GPU device to run training and evaluation</param>
-        /// <param name="inputSize">Width or Height of the square input image</param>
-        /// <param name="inputLayers">Number of layers in the input image</param>
-        public static Function CreateMLPModel(DeviceDescriptor device, int inputSize, int inputLayers, int outputSize, float inputScaleFactor = 1.0f)
+        /// if true, any existing model will be overridden and the new one evaluated. 
+        /// if false and there is an existing model, the existing model is evaluated.</param>
+        public static Function CreateMLPModel(DeviceDescriptor device, int inputImageWidth, int inputLayers, int outputSize, float inputScaleFactor = 1.0f)
         {
             var classifierName = "ClassifierOutput";
             Function classifierOutput;
-            int imageSize = inputSize * inputSize;
-            int[] imageDim = new int[] { imageSize * inputLayers};
+            int imageSize = inputImageWidth * inputImageWidth;
+            int[] imageDim = new int[] { imageSize };
+
+            if (inputLayers != 1) throw new NotImplementedException("Multiple layers is not imlemented yet for MLP");
 
             // build the network
             var input = CNTKLib.InputVariable(imageDim, DataType.Float, "Input");
 
             // For MLP, we like to have the middle layer to have certain amount of states.
-            int hiddenLayerDim = (imageDim[0] + outputSize) / 2;
+            int hiddenLayerDim = (imageSize + outputSize) / 2;
             if (inputScaleFactor == 1.0f)
             {
                 classifierOutput = CreateMLPClassifier(device, outputSize, hiddenLayerDim, input, classifierName);
@@ -50,6 +52,8 @@ namespace ML.NET.App.CNTKHelper
         /// Create a CNN image classifier for MNIST data.
         /// </summary>
         /// <param name="device">CPU or GPU device to run training and evaluation</param>
+        /// if true, any existing model will be overridden and the new one evaluated. 
+        /// if false and there is an existing model, the existing model is evaluated.</param>
         public static Function CreateCNNModel(DeviceDescriptor device, int inputSize, int inputLayers, int outputSize, float inputScaleFactor = 1.0f)
         {
             var classifierName = "ClassifierOutput";
@@ -71,11 +75,10 @@ namespace ML.NET.App.CNTKHelper
 
             return classifierOutput;
         }
-        private static Function CreateMLPClassifier(DeviceDescriptor device, int numOutputClasses, int hiddenLayerDim, Function scaledInput, string classifierName)
+        private static Function CreateMLPClassifier(DeviceDescriptor device, int numOutputClasses, int hiddenLayerDim, Function input, string classifierName)
         {
-            Function dense = CNTKHelper.Dense(scaledInput, hiddenLayerDim, device, Activation.Sigmoid, "");
-            // dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
-            Function classifierOutput = CNTKHelper.Dense(dense, numOutputClasses, device, Activation.None, classifierName);
+            Function dense1 = CNTKHelper.Dense(input, hiddenLayerDim, device, Activation.Sigmoid, "");
+            Function classifierOutput = CNTKHelper.Dense(dense1, numOutputClasses, device, Activation.None, classifierName);
             return classifierOutput;
         }
 
@@ -170,11 +173,15 @@ namespace ML.NET.App.CNTKHelper
             return CNTKLib.Plus(plusParam, timesFunction, outputName);
         }
 
-        public static void PrintTrainingProgress(Trainer trainer)
+
+        public static void PrintTrainingProgress(Trainer trainer, int minibatchIdx, int outputFrequencyInMinibatches)
         {
-            float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
-            float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
-            Trace.WriteLine($"CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
+            if ((minibatchIdx % outputFrequencyInMinibatches) == 0 && trainer.PreviousMinibatchSampleCount() != 0)
+            {
+                float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
+                float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
+                Trace.WriteLine($"Minibatch: {minibatchIdx} CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
+            }
         }
 
         public static void PrintOutputDims(Function function, string functionName)
@@ -201,13 +208,10 @@ namespace ML.NET.App.CNTKHelper
             float max = array[0];
             for (int i = 1; i < array.Length; i++)
             {
-                var val = array[i];
-                if (float.IsNaN(val))
-                    return -1;
-                if (val > max)
+                if (array[i] > max)
                 {
                     maxIndex = i;
-                    max = val;
+                    max = array[i];
                 }
             }
             return maxIndex;
@@ -220,28 +224,9 @@ namespace ML.NET.App.CNTKHelper
         /// <returns></returns>
         public static float[] OneHot(int value, int size, float ratio = 1.0f)
         {
+            if (value > size) throw new ArgumentOutOfRangeException("Value cannot be greater the the size");
             var array = new float[size];
             array[value] = ratio;
-            return array;
-        }
-        /// <summary>
-        /// Create a one hot encoded float array
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="size"></param>
-        /// <returns></returns>
-        public static float[] SoftMax(float[] input)
-        {
-            var array = new float[input.Length];
-            double sum = 0;
-            for (int i = 0; i < input.Length; i++)
-            {
-                sum += Math.Exp(input[i]);
-            }
-            for (int i = 0; i < input.Length; i++)
-            {
-                array[i]= (float)(Math.Exp(input[i])/sum);
-            }
             return array;
         }
     }

@@ -29,6 +29,7 @@ namespace ML.NET.App.PacMan.Model
         private World()
         {
             this.currentLevel = 2;
+            this.isStopped = true;
         }
 
         private void Initialize()
@@ -40,9 +41,8 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(new EuristicAgent());
             this.Agents.Add(new DijkstraAgent());
             this.Agents.Add(new GreedyAgent());
-            this.Agents.Add(this.currentAgent = new MLAgent());
-
-            this.Start();
+            this.Agents.Add(new CNNAgent());
+            this.Agents.Add(this.CurrentAgent = new MLPAgent());
         }
 
         public event EventHandler GameCompleted;
@@ -153,13 +153,12 @@ namespace ML.NET.App.PacMan.Model
                             break;
                         case 9: // Pacman
                             this.Pacman.Position = new Position(j, i);
+                            this.Values[i, j] = 0; // Pacman is not listed in Values
                             break;
                     }
                 }
             }
-
-            this.CurrentAgent.Activate();
-
+            
             this.startTime = DateTime.Now;
         }
 

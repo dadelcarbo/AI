@@ -38,7 +38,6 @@ namespace ML.NET.App
             world.PropertyChanged += World_PropertyChanged;
             timer.Interval = TimeSpan.FromMilliseconds(0);
             timer.Tick += world.GameLoop;
-            timer.Start();
 
             this.KeyDown += MainWindow_KeyDown;
         }

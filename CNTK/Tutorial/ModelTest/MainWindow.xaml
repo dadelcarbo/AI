@@ -1,0 +1,17 @@
+﻿<Window x:Class="CNTKSamples.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CNTKSamples"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="250" Width="450">
+    <Grid>
+        <StackPanel>
+            <Button Name="Test1Btn" Content="Test Dense" Click="Test1Btn_Click" HorizontalAlignment="Center" Margin="5"></Button>
+            <Button Name="Test2Btn" Content="Test Dense" Click="Test2Btn_Click" HorizontalAlignment="Center" Margin="5"></Button>
+            <Button Name="Test3Btn" Content="Test Dense" Click="Test3Btn_Click" HorizontalAlignment="Center" Margin="5"></Button>
+            <Button Name="Test4Btn" Content="Test Dense" Click="Test4Btn_Click" HorizontalAlignment="Center" Margin="5"></Button>
+        </StackPanel>
+    </Grid>
+</Window>
