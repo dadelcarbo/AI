@@ -22,12 +22,41 @@ namespace ML.NET.App.CNTKHelper
         /// <param name="device">CPU or GPU device to run training and evaluation</param>
         /// <param name="inputSize">Width or Height of the square input image</param>
         /// <param name="inputLayers">Number of layers in the input image</param>
-        public static Function CreateMLPModel(DeviceDescriptor device, int inputSize, int inputLayers, int outputSize, float inputScaleFactor = 1.0f)
+        public static Function CreateMLPModel1D(DeviceDescriptor device, int inputSize, int inputLayers, int outputSize, float inputScaleFactor = 1.0f)
+        {
+            var classifierName = "ClassifierOutput";
+            Function classifierOutput;
+            int[] imageDim = new int[] { inputSize * inputLayers};
+
+            // build the network
+            var input = CNTKLib.InputVariable(imageDim, DataType.Float, "Input");
+
+            // For MLP, we like to have the middle layer to have certain amount of states.
+            int hiddenLayerDim = (imageDim[0] + outputSize) / 2;
+            if (inputScaleFactor == 1.0f)
+            {
+                classifierOutput = CreateMLPClassifier(device, outputSize, hiddenLayerDim, input, classifierName);
+            }
+            else
+            {
+                var scaledInput = CNTKLib.ElementTimes(Constant.Scalar<float>(inputScaleFactor, device), input);
+                classifierOutput = CreateMLPClassifier(device, outputSize, hiddenLayerDim, scaledInput, classifierName);
+            }
+
+            return classifierOutput;
+        }
+        /// <summary>
+        /// Create a MLP image classifier for MNIST data.
+        /// </summary>
+        /// <param name="device">CPU or GPU device to run training and evaluation</param>
+        /// <param name="inputSize">Width or Height of the square input image</param>
+        /// <param name="inputLayers">Number of layers in the input image</param>
+        public static Function CreateMLPModel2D(DeviceDescriptor device, int inputSize, int inputLayers, int outputSize, float inputScaleFactor = 1.0f)
         {
             var classifierName = "ClassifierOutput";
             Function classifierOutput;
             int imageSize = inputSize * inputSize;
-            int[] imageDim = new int[] { imageSize * inputLayers};
+            int[] imageDim = new int[] { imageSize * inputLayers };
 
             // build the network
             var input = CNTKLib.InputVariable(imageDim, DataType.Float, "Input");
@@ -73,9 +102,9 @@ namespace ML.NET.App.CNTKHelper
         }
         private static Function CreateMLPClassifier(DeviceDescriptor device, int numOutputClasses, int hiddenLayerDim, Function scaledInput, string classifierName)
         {
-            Function dense = CNTKHelper.Dense(scaledInput, hiddenLayerDim, device, Activation.Sigmoid, "");
-            //dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
-            Function classifierOutput = CNTKHelper.Dense(dense, numOutputClasses, device, Activation.None, classifierName);
+            Function dense = CNTKHelper.Dense(scaledInput, hiddenLayerDim, device, Activation.ReLU, "");
+            dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
+            Function classifierOutput = CNTKHelper.Dense(dense, numOutputClasses, device, Activation.Sigmoid, classifierName);
             //classifierOutput = CNTKLib.Softmax(classifierOutput);
 
             return classifierOutput;
@@ -176,7 +205,13 @@ namespace ML.NET.App.CNTKHelper
         {
             float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
             float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
-            Trace.WriteLine($"CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
+            Trace.WriteLine($"Loss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
+        }
+        public static void PrintTrainingProgress(Trainer trainer, int epoc)
+        {
+            float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
+            float evaluationValue = (float)trainer.PreviousMinibatchEvaluationAverage();
+            Trace.WriteLine($"Epoc={epoc} Loss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
         }
 
         public static void PrintOutputDims(Function function, string functionName)

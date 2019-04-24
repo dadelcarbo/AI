@@ -36,10 +36,19 @@ namespace ML.NET.App
 
             this.DataContext = world;
             world.PropertyChanged += World_PropertyChanged;
-            timer.Interval = TimeSpan.FromMilliseconds(0);
+            timer.Interval = TimeSpan.FromMilliseconds(30);
             timer.Tick += world.GameLoop;
 
             this.KeyDown += MainWindow_KeyDown;
+
+            //var agent = new Agent2D.Agent2D();
+            //for (int i = 0; i < 15; i++)
+            //{
+            //    agent.Test();
+            //    agent.Train();
+            //}
+            //agent.Test();
+            //Environment.Exit(0);
         }
 
         DispatcherTimer timer = new DispatcherTimer();

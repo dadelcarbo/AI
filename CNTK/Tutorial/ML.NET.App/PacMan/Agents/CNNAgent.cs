@@ -126,7 +126,7 @@ namespace ML.NET.App.PacMan.Agents
                 while (epoc > 0)
                 {
                     trainer.TrainMinibatch(arguments, device);
-                    CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer);
+                    CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer, epoc);
 
                     epoc--;
                 }
@@ -185,7 +185,7 @@ namespace ML.NET.App.PacMan.Agents
             {
                 for (int j = 0; j < World.SIZE; j++) // j => X
                 {
-                    switch (worldValues[i, j])
+                    switch (worldValues[i * World.SIZE + j])
                     {
                         case 1: // Wall
                             values[i * World.SIZE + j] = 1;
@@ -198,31 +198,6 @@ namespace ML.NET.App.PacMan.Agents
             }
             var p = World.Instance.Pacman.Position;
             values[worldSurface * 2 + p.Y * World.SIZE + p.X] = 1;
-
-            //for (int i = 0; i < World.SIZE; i++) // i => Y
-            //{
-            //    var dump = string.Empty;
-            //    for (int j = 0; j < World.SIZE; j++) // j => X
-            //    {
-            //        if (values[i * World.SIZE + j] != 0)
-            //        {
-            //            dump += 1;
-            //        }
-            //        else if (values[worldSurface + i * World.SIZE + j] != 0)
-            //        {
-            //            dump += 2;
-            //        }
-            //        else if (values[worldSurface * 2 + i * World.SIZE + j] != 0)
-            //        {
-            //            dump += 9;
-            //        }
-            //        else
-            //        {
-            //            dump += 0;
-            //        }
-            //    }
-            //    Trace.WriteLine(dump);
-            //}
 
             return values;
         }

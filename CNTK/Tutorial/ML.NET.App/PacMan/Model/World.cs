@@ -28,7 +28,7 @@ namespace ML.NET.App.PacMan.Model
         public Pacman Pacman = new Pacman(new Position(1, 1));
         private World()
         {
-            this.currentLevel = 3;
+            this.currentLevel = 0;
             this.isStopped = true;
         }
 
@@ -41,8 +41,11 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(new EuristicAgent());
             this.Agents.Add(new DijkstraAgent());
             this.Agents.Add(new GreedyAgent());
-            this.Agents.Add(new CNNAgent());
-            this.Agents.Add(this.CurrentAgent = new MLPAgent());
+            //this.Agents.Add(new CNNAgent());
+            this.Agents.Add(this.CurrentAgent = new SupervisedAgent());
+            this.Agents.Add(new MLPAgent());
+
+            InitLevel();
         }
 
         public event EventHandler GameCompleted;
@@ -55,66 +58,72 @@ namespace ML.NET.App.PacMan.Model
             this.IsStopped = false;
             this.Score = 200;
             this.Duration = 0;
+            InitLevel();
 
+            this.startTime = DateTime.Now;
+        }
+
+        private void InitLevel()
+        {
             if (currentLevel == 0)
             {
                 for (int i = 0; i < SIZE; i++)
                 {
                     for (int j = 0; j < SIZE; j++)
                     {
-                        this.Values[i, j] = 0;
+                        this.Values[i * SIZE + j] = 0;
                     }
                 }
                 // Create borders
                 for (int i = 0; i < SIZE; i++)
                 {
-                    this.Values[i, 0] = 1;
-                    this.Values[0, i] = 1;
-                    this.Values[i, SIZE - 1] = 1;
-                    this.Values[SIZE - 1, i] = 1;
-                }
-                for (int i = 2; i < SIZE; i++)
-                {
-                    this.Values[SIZE / 2, i] = 1;
-                }
-                for (int i = 2; i < SIZE - 2; i++)
-                {
-                    this.Values[i, 2] = 1;
-                    this.Values[i, 8] = 1;
+                    this.Values[i] = 1;
+                    this.Values[(SIZE - 1) * SIZE + i] = 1;
+                    this.Values[i * SIZE] = 1;
+                    this.Values[(SIZE - 1) * SIZE + i] = 1;
+                    this.Values[i * SIZE + (SIZE - 1)] = 1;
                 }
 
-                // Create Coins
-                for (int i = 0; i < NB_COINS;)
-                {
-                    int x = rnd.Next(1, SIZE - 2);
-                    int y = rnd.Next(1, SIZE - 2);
-                    if (this.Values[x, y] != 0) continue;
+                // Create Coin
+                int x = SIZE - 2, y = 1;
+                this.Values[y * SIZE + x] = 2;
 
-                    this.Values[x, y] = 2;
-                    i++;
-                }
-                // Create Ennemies
-                for (int i = 0; i < NB_ENNEMIES;)
-                {
-                    int x = rnd.Next(1, SIZE - 2);
-                    int y = rnd.Next(1, SIZE - 2);
-                    if (this.Values[x, y] == 3) continue;
+                // Create Pacman
+                x = 1; y = SIZE - 2;
+                this.Values[y * SIZE + x] = 9;
 
-                    this.Values[x, y] = 3;
-                    i++;
-                }
-                bool ok = false;
-                do
-                {
-                    int i = rnd.Next(1, SIZE - 2);
-                    int j = rnd.Next(1, SIZE - 2);
-                    if (this.Values[i, j] == 0)
-                    {
-                        ok = true;
-                        this.Pacman.Position = new Position(j, i);
-                    }
-                }
-                while (!ok);
+
+                //for (int i = 0; i < NB_COINS;)
+                //{
+                //    int x = rnd.Next(1, SIZE - 2);
+                //    int y = rnd.Next(1, SIZE - 2);
+                //    if (this.Values[x, y] != 0) continue;
+
+                //    this.Values[x, y] = 2;
+                //    i++;
+                //}
+                //// Create Ennemies
+                //for (int i = 0; i < NB_ENNEMIES;)
+                //{
+                //    int x = rnd.Next(1, SIZE - 2);
+                //    int y = rnd.Next(1, SIZE - 2);
+                //    if (this.Values[x, y] == 3) continue;
+
+                //    this.Values[x, y] = 3;
+                //    i++;
+                //}
+                //bool ok = false;
+                //do
+                //{
+                //    int i = rnd.Next(1, SIZE - 2);
+                //    int j = rnd.Next(1, SIZE - 2);
+                //    if (this.Values[i, j] == 0)
+                //    {
+                //        ok = true;
+                //        this.Pacman.Position = new Position(j, i);
+                //    }
+                //}
+                //while (!ok);
             }
             else
             {
@@ -127,7 +136,7 @@ namespace ML.NET.App.PacMan.Model
                     var items = lines[i].Split(',');
                     for (int j = 0; j < SIZE; j++)
                     {
-                        this.Values[i, j] = int.Parse(items[j]);
+                        this.Values[i * SIZE + j] = int.Parse(items[j]);
                     }
                 }
             }
@@ -140,7 +149,7 @@ namespace ML.NET.App.PacMan.Model
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    switch (this.Values[i, j])
+                    switch (this.Values[i * SIZE + j])
                     {
                         case 1: // Wall
                             this.Walls.Add(new Wall(new Position(j, i)));
@@ -153,32 +162,28 @@ namespace ML.NET.App.PacMan.Model
                             break;
                         case 9: // Pacman
                             this.Pacman.Position = new Position(j, i);
-                            this.Values[i, j] = 0; // Pacman is not listed in Values
+                            this.Values[i * SIZE + j] = 0; // Pacman is not listed in Values
                             break;
                     }
                 }
             }
-
-            this.startTime = DateTime.Now;
         }
-
 
         private void CreateCoin(int nbCoins)
         {
             // Create Coins
-            for (int i = 0; i < nbCoins;)
+            for (int n = 0; n < nbCoins;)
             {
-                int x = rnd.Next(1, SIZE - 2);
-                int y = rnd.Next(1, SIZE - 2);
-                x = 10; // @@@@
-                y = 10; // @@@@
-                if (this.Values[x, y] != 0) continue;
+                int j = rnd.Next(1, SIZE - 1);
+                int i = rnd.Next(1, SIZE - 1);
 
-                this.Values[x, y] = 2;
-                Coin coin = new Coin(new Position(y, x));
+                if (this.Values[i * World.SIZE + j] != 0) continue;
+
+                this.Values[i * World.SIZE + j] = 2;
+                Coin coin = new Coin(new Position(j, i));
                 Coin.Renderer.Draw(coin);
                 this.Coins.Add(coin);
-                i++;
+                n++;
             }
         }
 
@@ -189,12 +194,12 @@ namespace ML.NET.App.PacMan.Model
             this.IsStopped = true;
             this.GameCompleted?.Invoke(this, null);
         }
-        public const int SIZE = 13;
+        public const int SIZE = 5;
         public const int PLAY_ACTION_COUNT = 5;
         const int NB_COINS = 8;
         const int NB_ENNEMIES = 0;
 
-        public int[,] Values = new int[SIZE, SIZE];
+        public int[] Values = new int[SIZE * SIZE];
 
         public List<Coin> Coins = new List<Coin>();
         public List<Wall> Walls = new List<Wall>();
@@ -309,14 +314,14 @@ namespace ML.NET.App.PacMan.Model
 
         public void GoTo(Position p)
         {
-            switch (this.Values[p.Y, p.X])
+            switch (this.Values[p.Y * SIZE + p.X])
             {
                 case 0:
                     this.Pacman.GoTo(p);
                     break;
                 case 1: break;
                 case 2:
-                    this.Pacman.GoTo(new Position(2, 2)); // @@@@
+                    this.Pacman.GoTo(new Position(1, SIZE - 2));
                     this.EatCoin(p);
                     break;
                 default:
@@ -327,7 +332,7 @@ namespace ML.NET.App.PacMan.Model
         private void EatCoin(Position p)
         {
             // Remove from world map
-            this.Values[p.Y, p.X] = 0;
+            this.Values[p.Y * SIZE + p.X] = 0;
 
             // Remove from coin list
             var coin = this.Coins.First(c => c.Position.X == p.X && c.Position.Y == p.Y);
@@ -352,7 +357,7 @@ namespace ML.NET.App.PacMan.Model
         private void EatEnnemy(Position p)
         {
             // Remove from world map
-            this.Values[p.Y, p.X] = 0;
+            this.Values[p.Y * SIZE + p.X] = 0;
 
             // Remove from coin list
             var ennemy = this.Ennemies.First(c => c.Position.X == p.X && c.Position.Y == p.Y);
@@ -371,7 +376,7 @@ namespace ML.NET.App.PacMan.Model
 
         internal bool CanGoTo(Position p)
         {
-            return this.Values[p.Y, p.X] != 1;
+            return this.Values[p.Y * SIZE + p.X] != 1;
         }
         internal bool CanGo(PlayAction action)
         {
@@ -391,7 +396,7 @@ namespace ML.NET.App.PacMan.Model
                     p.X += 1;
                     break;
             }
-            return this.Values[p.Y, p.X] != 1;
+            return this.Values[p.Y * SIZE + p.X] != 1;
         }
     };
 }

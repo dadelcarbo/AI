@@ -21,15 +21,15 @@ namespace ML.NET.App.PacMan.Agents
             {
                 for (int j = 1; j < World.SIZE - 1; j++)
                 {
-                    if (values[i, j] == 1) continue;
+                    if (values[i * World.SIZE + j] == 1) continue;
 
                     var p1 = new Position(j, i);
-                    if (values[i + 1, j] != 1)
+                    if (values[(i+1) * World.SIZE + j] != 1)
                     {
                         var p2 = new Position(j, i + 1);
                         Graph.AddEdge(p1, p2);
                     }
-                    if (values[i, j + 1] != 1)
+                    if (values[i * World.SIZE + j + 1] != 1)
                     {
                         var p3 = new Position(j + 1, i);
                         Graph.AddEdge(p1, p3);

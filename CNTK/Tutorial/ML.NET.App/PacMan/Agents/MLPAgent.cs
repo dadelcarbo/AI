@@ -33,10 +33,7 @@ namespace ML.NET.App.PacMan.Agents
             int inputSize = World.SIZE;
             int outputSize = Enum.GetValues(typeof(PlayAction)).Length;
 
-            var devices = DeviceDescriptor.AllDevices();
-            device = devices.Last();
-
-            model = CNTKHelper.CNTKHelper.CreateMLPModel(device, inputSize, inputLayer, outputSize);
+            model = CNTKHelper.CNTKHelper.CreateMLPModel2D(device, inputSize, inputLayer, outputSize);
 
             inputVariable = model.Arguments.First(a => a.IsInput);
             inputDataMap = new Dictionary<Variable, Value>() { { inputVariable, null } };
@@ -46,7 +43,7 @@ namespace ML.NET.App.PacMan.Agents
             outputTrainBatch = new Dictionary<Variable, Value>() { { model.Output, null } };
 
             // Set per sample learning rate
-            CNTK.TrainingParameterScheduleDouble learningRatePerSample = new CNTK.TrainingParameterScheduleDouble(0.003125, 1);
+            CNTK.TrainingParameterScheduleDouble learningRatePerSample = new CNTK.TrainingParameterScheduleDouble(0.02, 1);
 
             actionVariable = CNTKLib.InputVariable(new int[] { World.PLAY_ACTION_COUNT }, DataType.Float, "Actions");
             var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(new Variable(model), actionVariable, "lossFunction");
@@ -141,14 +138,14 @@ namespace ML.NET.App.PacMan.Agents
                     { inputVariable, inputMinibatch },
                     { actionVariable, outputMinibatch }
                 };
-                int epoc = 100;
+                int epoc = 10;
                 while (epoc > 0)
                 {
                     trainer.TrainMinibatch(arguments, device);
 
                     epoc--;
                 }
-                CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer);
+                CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer, epoc);
 
                 //inputDataMap[inputVariable] = inputs;
                 //outputDataMap[model.Output] = null;
@@ -235,7 +232,7 @@ namespace ML.NET.App.PacMan.Agents
             {
                 for (int j = 0; j < World.SIZE; j++) // j => X
                 {
-                    switch (worldValues[i, j])
+                    switch (worldValues[i * World.SIZE + j])
                     {
                         case 1: // Wall
                             values[i * World.SIZE + j] = 1;

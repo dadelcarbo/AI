@@ -84,6 +84,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Agent2D\Agent2D.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -108,6 +109,7 @@
     <Compile Include="PacMan\Agents\CNNAgent.cs" />
     <Compile Include="PacMan\Agents\RandomAgent.cs" />
     <Compile Include="PacMan\Agents\State.cs" />
+    <Compile Include="PacMan\Agents\SupervisedAgent.cs" />
     <Compile Include="PacMan\Model\Ennemy.cs" />
     <Compile Include="PacMan\Model\Pacman.cs" />
     <Compile Include="PacMan\Model\PlayAction.cs" />
