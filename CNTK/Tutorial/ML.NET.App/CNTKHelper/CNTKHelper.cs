@@ -74,9 +74,9 @@ namespace ML.NET.App.CNTKHelper
         private static Function CreateMLPClassifier(DeviceDescriptor device, int numOutputClasses, int hiddenLayerDim, Function scaledInput, string classifierName)
         {
             Function dense = CNTKHelper.Dense(scaledInput, hiddenLayerDim, device, Activation.Sigmoid, "");
-            // dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
+            //dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
             Function classifierOutput = CNTKHelper.Dense(dense, numOutputClasses, device, Activation.None, classifierName);
-            classifierOutput = CNTKLib.Softmax(classifierOutput);
+            //classifierOutput = CNTKLib.Softmax(classifierOutput);
 
             return classifierOutput;
         }
@@ -197,11 +197,11 @@ namespace ML.NET.App.CNTKHelper
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
-        public static int ArgMax(float[] array)
+        public static int ArgMax(IList<float> array)
         {
             int maxIndex = 0;
             float max = array[0];
-            for (int i = 1; i < array.Length; i++)
+            for (int i = 1; i < array.Count; i++)
             {
                 var val = array[i];
                 if (float.IsNaN(val))

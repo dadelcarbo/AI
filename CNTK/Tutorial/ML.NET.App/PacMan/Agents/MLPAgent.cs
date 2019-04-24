@@ -77,7 +77,7 @@ namespace ML.NET.App.PacMan.Agents
         }
 
         private int previousScore = 0;
-        private int batchSize = 3;
+        private int batchSize = 10;
         private float decay = 0.9f;
         public void OnWorldMovePerformed(World world, PlayAction action)
         {
@@ -90,22 +90,12 @@ namespace ML.NET.App.PacMan.Agents
             if (state.Reward != 0 && states.Count >= batchSize)
             {
                 states = states.Take(batchSize).ToList();
-                Trace.WriteLine($"Train batch");
 
                 // Calculate reward and expected output
                 float reward = 0;
-                var values = new float[states.First().Value.Length * states.Count];
-                var actions = new float[World.PLAY_ACTION_COUNT * states.Count];
+                var values = new float[states.First().Value.Length * batchSize];
+                var actions = new float[World.PLAY_ACTION_COUNT * batchSize];
                 int i = 0;
-
-
-                inputDataMap[inputVariable] = Value.CreateBatch<float>(model.Arguments[0].Shape, states.First().Value, device);
-                outputDataMap[model.Output] = null;
-
-                model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
-
-                var beforeOutput = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
-
                 float[] expectedActions = null;
                 foreach (var state in states)
                 {
@@ -113,12 +103,12 @@ namespace ML.NET.App.PacMan.Agents
 
                     reward = decay * reward + state.Reward;
 
-                    if (reward > 100)
-                    {
-                        Trace.WriteLine("Reward");
-                    }
+                    //if (reward > 100)
+                    //{
+                    //    TraceValues(state.Value, "State Values");
+                    //}
 
-                    Trace.WriteLine($"Train batch - Action: {state.Action} Reward: {reward}");
+                    //Trace.WriteLine($"Train batch - Action: {state.Action} Reward: {reward}");
 
                     expectedActions = CNTKHelper.CNTKHelper.SoftMax(CNTKHelper.CNTKHelper.OneHot((int)state.Action, World.PLAY_ACTION_COUNT, reward));
 
@@ -134,13 +124,24 @@ namespace ML.NET.App.PacMan.Agents
                 var outputs = Value.CreateBatch<float>(model.Output.Shape, actions, device);
                 var outputMinibatch = new MinibatchData(outputs, (uint)states.Count());
 
+                // Calculate output before learning (for debug)
+
+#if DEBUG
+                //inputDataMap[inputVariable] = inputs;
+                //outputDataMap[model.Output] = null;
+
+                //model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
+
+                //var beforeOutput = outputDataMap[model].GetDenseData<float>(model);
+#endif
+
                 // Apply learning
                 var arguments = new Dictionary<Variable, MinibatchData>
                 {
                     { inputVariable, inputMinibatch },
                     { actionVariable, outputMinibatch }
                 };
-                int epoc = 3;
+                int epoc = 100;
                 while (epoc > 0)
                 {
                     trainer.TrainMinibatch(arguments, device);
@@ -149,16 +150,22 @@ namespace ML.NET.App.PacMan.Agents
                 }
                 CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer);
 
-                inputDataMap[inputVariable] = Value.CreateBatch<float>(model.Arguments[0].Shape, states.First().Value, device);
-                outputDataMap[model.Output] = null;
+                //inputDataMap[inputVariable] = inputs;
+                //outputDataMap[model.Output] = null;
 
-                model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
+                //model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
 
-                var afterOutput = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
-                Trace.WriteLine("Action  \t" + Enum.GetValues(typeof(PlayAction)).OfType<PlayAction>().Select(p => p.ToString()).Aggregate((a, b) => a + "  \t" + b));
-                Trace.WriteLine("Expected\t" + expectedActions.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b));
-                Trace.WriteLine("Before  \t" + beforeOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(beforeOutput));
-                Trace.WriteLine("After   \t" + afterOutput.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(afterOutput));
+                //var afterOutput = outputDataMap[model].GetDenseData<float>(model);
+                //Trace.WriteLine("Action  \t" + Enum.GetValues(typeof(PlayAction)).OfType<PlayAction>().Select(p => p.ToString()).Aggregate((a, b) => a + "  \t" + b));
+                //for (i = 0; i < beforeOutput.Count; i++)
+                //{
+                //    var ea = actions.Skip(i * World.PLAY_ACTION_COUNT).Take(World.PLAY_ACTION_COUNT).ToArray<float>();
+                //    var bo = beforeOutput[i];
+                //    var ao = afterOutput[i];
+                //    Trace.WriteLine("Expected\t" + ea.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(ea));
+                //    Trace.WriteLine("Before  \t" + bo.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(bo));
+                //    Trace.WriteLine("After   \t" + ao.Select(p => p.ToString("0.000")).Aggregate((a, b) => a + "\t" + b) + "\t" + (PlayAction)CNTKHelper.CNTKHelper.ArgMax(ao));
+                //}
 
                 // Go for next 
                 states.Clear();
@@ -182,7 +189,7 @@ namespace ML.NET.App.PacMan.Agents
 
                 model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
 
-                var output = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
+                var output = outputDataMap[model].GetDenseData<float>(model)[0];
 
                 // Convert output to PlayAction
                 int maxIndex = CNTKHelper.CNTKHelper.ArgMax(output);
@@ -193,7 +200,20 @@ namespace ML.NET.App.PacMan.Agents
             else
             {
                 //Trace.WriteLine("Random Action");
-                action = RandomAgent.GetRandomAction();
+                // action = RandomAgent.GetRandomAction();
+
+                var coin = world.Coins.Select(c => new { c, Dist = (world.Pacman.Position.X - c.Position.X) * (world.Pacman.Position.X - c.Position.X) + (world.Pacman.Position.Y - c.Position.Y) * (world.Pacman.Position.Y - c.Position.Y) }).OrderBy(c => c.Dist).First().c;
+
+                var dx = coin.Position.X - world.Pacman.Position.X;
+                var dy = coin.Position.Y - world.Pacman.Position.Y;
+                if (Math.Abs(dx) > Math.Abs(dy))
+                {
+                    action = dx > 0 ? PlayAction.Right : PlayAction.Left;
+                }
+                else
+                {
+                    action = dy > 0 ? PlayAction.Down : PlayAction.Up;
+                }
             }
             state = new State
             {
@@ -229,32 +249,39 @@ namespace ML.NET.App.PacMan.Agents
             var p = World.Instance.Pacman.Position;
             values[worldSurface * 2 + p.Y * World.SIZE + p.X] = 1;
 
-            //for (int i = 0; i < World.SIZE; i++) // i => Y
-            //{
-            //    var dump = string.Empty;
-            //    for (int j = 0; j < World.SIZE; j++) // j => X
-            //    {
-            //        if (values[i * World.SIZE + j] != 0)
-            //        {
-            //            dump += 1;
-            //        }
-            //        else if (values[worldSurface + i * World.SIZE + j] != 0)
-            //        {
-            //            dump += 2;
-            //        }
-            //        else if (values[worldSurface * 2 + i * World.SIZE + j] != 0)
-            //        {
-            //            dump += 9;
-            //        }
-            //        else
-            //        {
-            //            dump += 0;
-            //        }
-            //    }
-            //    Trace.WriteLine(dump);
-            //}
+            //TraceValues(values, "WorldToValue");
 
             return values;
+        }
+
+        private static void TraceValues(float[] values, string header)
+        {
+            Trace.WriteLine(header);
+            int worldSurface = World.SIZE * World.SIZE;
+            for (int i = 0; i < World.SIZE; i++) // i => Y
+            {
+                var dump = string.Empty;
+                for (int j = 0; j < World.SIZE; j++) // j => X
+                {
+                    if (values[i * World.SIZE + j] != 0)
+                    {
+                        dump += 1;
+                    }
+                    else if (values[worldSurface + i * World.SIZE + j] != 0)
+                    {
+                        dump += 2;
+                    }
+                    else if (values[worldSurface * 2 + i * World.SIZE + j] != 0)
+                    {
+                        dump += 9;
+                    }
+                    else
+                    {
+                        dump += 0;
+                    }
+                }
+                Trace.WriteLine(dump);
+            }
         }
     }
 }

@@ -152,7 +152,7 @@ namespace ML.NET.App.PacMan.Agents
 
                 model.Evaluate(inputDataMap, outputDataMap, DeviceDescriptor.CPUDevice);
 
-                var output = outputDataMap[model].GetDenseData<float>(model)[0].ToArray();
+                var output = outputDataMap[model].GetDenseData<float>(model)[0];
 
                 // Convert output to PlayAction
                 int maxIndex = CNTKHelper.CNTKHelper.ArgMax(output);

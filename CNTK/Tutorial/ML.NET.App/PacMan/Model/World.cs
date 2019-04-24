@@ -28,7 +28,7 @@ namespace ML.NET.App.PacMan.Model
         public Pacman Pacman = new Pacman(new Position(1, 1));
         private World()
         {
-            this.currentLevel = 2;
+            this.currentLevel = 3;
             this.isStopped = true;
         }
 
@@ -158,7 +158,7 @@ namespace ML.NET.App.PacMan.Model
                     }
                 }
             }
-            
+
             this.startTime = DateTime.Now;
         }
 
@@ -170,12 +170,14 @@ namespace ML.NET.App.PacMan.Model
             {
                 int x = rnd.Next(1, SIZE - 2);
                 int y = rnd.Next(1, SIZE - 2);
+                x = 10; // @@@@
+                y = 10; // @@@@
                 if (this.Values[x, y] != 0) continue;
 
                 this.Values[x, y] = 2;
                 Coin coin = new Coin(new Position(y, x));
                 Coin.Renderer.Draw(coin);
-                this.Coins.Add(coin);                
+                this.Coins.Add(coin);
                 i++;
             }
         }
@@ -314,7 +316,7 @@ namespace ML.NET.App.PacMan.Model
                     break;
                 case 1: break;
                 case 2:
-                    this.Pacman.GoTo(p);
+                    this.Pacman.GoTo(new Position(2, 2)); // @@@@
                     this.EatCoin(p);
                     break;
                 default:
