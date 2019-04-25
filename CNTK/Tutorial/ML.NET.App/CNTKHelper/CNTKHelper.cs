@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace ML.NET.App.CNTKHelper
@@ -26,7 +25,7 @@ namespace ML.NET.App.CNTKHelper
         {
             var classifierName = "ClassifierOutput";
             Function classifierOutput;
-            int[] imageDim = new int[] { inputSize * inputLayers};
+            int[] imageDim = new int[] { inputSize * inputLayers };
 
             // build the network
             var input = CNTKLib.InputVariable(imageDim, DataType.Float, "Input");
@@ -103,7 +102,7 @@ namespace ML.NET.App.CNTKHelper
         private static Function CreateMLPClassifier(DeviceDescriptor device, int numOutputClasses, int hiddenLayerDim, Function scaledInput, string classifierName)
         {
             Function dense = CNTKHelper.Dense(scaledInput, hiddenLayerDim, device, Activation.ReLU, "");
-            dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses)/2, device, Activation.ReLU, "");
+            dense = CNTKHelper.Dense(dense, (hiddenLayerDim + numOutputClasses) / 2, device, Activation.ReLU, "");
             Function classifierOutput = CNTKHelper.Dense(dense, numOutputClasses, device, Activation.Sigmoid, classifierName);
             //classifierOutput = CNTKLib.Softmax(classifierOutput);
 
@@ -277,7 +276,7 @@ namespace ML.NET.App.CNTKHelper
             }
             for (int i = 0; i < input.Length; i++)
             {
-                array[i]= (float)(Math.Exp(input[i])/sum);
+                array[i] = (float)(Math.Exp(input[i]) / sum);
             }
             return array;
         }
