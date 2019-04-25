@@ -42,7 +42,8 @@ namespace ML.NET.App.PacMan.Model
             this.Agents.Add(new DijkstraAgent());
             this.Agents.Add(new GreedyAgent());
             //this.Agents.Add(new CNNAgent());
-            this.Agents.Add(this.CurrentAgent = new SupervisedAgent());
+            this.Agents.Add(new SupervisedAgent());
+            this.Agents.Add(this.CurrentAgent = new SupervisedAgent2());
             this.Agents.Add(new MLPAgent());
 
             InitLevel();
@@ -178,6 +179,7 @@ namespace ML.NET.App.PacMan.Model
                 int i = rnd.Next(1, SIZE - 1);
 
                 if (this.Values[i * World.SIZE + j] != 0) continue;
+                if (this.Pacman.Position.X == j && this.Pacman.Position.Y == i) continue;
 
                 this.Values[i * World.SIZE + j] = 2;
                 Coin coin = new Coin(new Position(j, i));
@@ -194,7 +196,7 @@ namespace ML.NET.App.PacMan.Model
             this.IsStopped = true;
             this.GameCompleted?.Invoke(this, null);
         }
-        public const int SIZE = 5;
+        public const int SIZE = 7;
         public const int PLAY_ACTION_COUNT = 5;
         const int NB_COINS = 8;
         const int NB_ENNEMIES = 0;
@@ -319,9 +321,14 @@ namespace ML.NET.App.PacMan.Model
                 case 0:
                     this.Pacman.GoTo(p);
                     break;
-                case 1: break;
+                case 1:
+                    break;
                 case 2:
-                    this.Pacman.GoTo(new Position(1, SIZE - 2));
+
+                    int j = rnd.Next(1, SIZE - 1);
+                    int i = rnd.Next(1, SIZE - 1);
+
+                    this.Pacman.GoTo(new Position(j, i));
                     this.EatCoin(p);
                     break;
                 default:

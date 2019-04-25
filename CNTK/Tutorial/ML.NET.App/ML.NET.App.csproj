@@ -109,6 +109,7 @@
     <Compile Include="PacMan\Agents\CNNAgent.cs" />
     <Compile Include="PacMan\Agents\RandomAgent.cs" />
     <Compile Include="PacMan\Agents\State.cs" />
+    <Compile Include="PacMan\Agents\SupervisedAgent2.cs" />
     <Compile Include="PacMan\Agents\SupervisedAgent.cs" />
     <Compile Include="PacMan\Model\Ennemy.cs" />
     <Compile Include="PacMan\Model\Pacman.cs" />

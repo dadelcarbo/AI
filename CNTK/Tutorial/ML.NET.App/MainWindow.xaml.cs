@@ -36,7 +36,7 @@ namespace ML.NET.App
 
             this.DataContext = world;
             world.PropertyChanged += World_PropertyChanged;
-            timer.Interval = TimeSpan.FromMilliseconds(30);
+            timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += world.GameLoop;
 
             this.KeyDown += MainWindow_KeyDown;

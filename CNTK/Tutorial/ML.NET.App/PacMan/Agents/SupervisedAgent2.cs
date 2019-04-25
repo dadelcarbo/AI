@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace ML.NET.App.PacMan.Agents
 {
-    public class SupervisedAgent : IAgent
+    public class SupervisedAgent2 : IAgent
     {
-        public string Name => "Supervised Agent";
+        public string Name => "No Border Agent";
 
         Function model;
         DeviceDescriptor device = DeviceDescriptor.CPUDevice;
@@ -25,10 +25,10 @@ namespace ML.NET.App.PacMan.Agents
         Variable actionVariable;
 
         Random rnd = new Random();
-        public SupervisedAgent()
+        public SupervisedAgent2()
         {
-            int inputLayer = 3; // 1 layer for WALLs - Coins - Player
-            int inputSize = World.SIZE;
+            int inputLayer = 2; // 1 layer for WALLs - Coins - Player
+            int inputSize = World.SIZE - 2;
             int outputSize = Enum.GetValues(typeof(PlayAction)).Length;
 
             model = CNTKHelper.CNTKHelper.CreateMLPModel2D(device, inputSize, inputLayer, outputSize);
@@ -62,8 +62,8 @@ namespace ML.NET.App.PacMan.Agents
 
         private void Train()
         {
-            uint SIZE_IN_NB_LAYER = 3;
-            uint SIZE_IN = (World.SIZE) * (World.SIZE);
+            uint SIZE_IN_NB_LAYER = 2;
+            uint SIZE_IN = (World.SIZE - 2) * (World.SIZE - 2);
             uint nbTries = (World.SIZE - 2) * (World.SIZE - 2) * (World.SIZE - 2) * (World.SIZE - 2) - (World.SIZE - 2) * (World.SIZE - 2);
 
             var values = new float[nbTries * SIZE_IN * SIZE_IN_NB_LAYER];
@@ -126,18 +126,18 @@ namespace ML.NET.App.PacMan.Agents
                                 { inputVariable, inputMinibatch },
                                 { actionVariable, outputMinibatch }
                             };
-            int epoc = 2500;
-            while (epoc > 0)
+            int epoc = 0;
+            while (epoc < 50)
             {
                 trainer.TrainMinibatch(arguments, device);
 
                 CNTKHelper.CNTKHelper.PrintTrainingProgress(trainer, epoc);
 
-                float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
+                //float trainLossValue = (float)trainer.PreviousMinibatchLossAverage();
                 //if (trainLossValue < 0.005)
                 //    break;
 
-                epoc--;
+                epoc++;
 
                 // Test
 
@@ -214,51 +214,43 @@ namespace ML.NET.App.PacMan.Agents
         private float[] WorldToValue()
         {
             var worldValues = World.Instance.Values;
-            int worldSurface = World.SIZE * World.SIZE;
-            float[] values = new float[3 * worldSurface];
+            int size = World.SIZE - 2;
+            int worldSurface = size * size;
+            int nbLayers = 2;
+            float[] values = new float[nbLayers * worldSurface];
 
             // Create wall array
-            for (int i = 0; i < World.SIZE; i++) // i => Y
+            for (int i = 1; i < World.SIZE - 1; i++) // i => Y
             {
-                for (int j = 0; j < World.SIZE; j++) // j => X
+                for (int j = 1; j < World.SIZE - 1; j++) // j => X
                 {
                     switch (worldValues[i * World.SIZE + j])
                     {
-                        case 1: // Wall
-                            values[i * World.SIZE + j] = 1;
-                            break;
                         case 2: // Coin
-                            values[worldSurface + i * World.SIZE + j] = 1;
+                            values[(i - 1) * size + (j - 1)] = 1;
                             break;
                     }
                 }
             }
             var p = World.Instance.Pacman.Position;
-            values[worldSurface * 2 + p.Y * World.SIZE + p.X] = 1;
+            values[worldSurface + (p.Y - 1) * size + (p.X - 1)] = 1;
 
-            TraceValues(values, "WorldToValue");
+            //TraceValues(values, "WorldToValue");
 
             return values;
         }
 
         private float[] WorldToValue(Position coinPosition, Position playerPosition)
         {
-            var worldValues = World.Instance.Values;
-            int worldSurface = World.SIZE * World.SIZE;
-            float[] values = new float[3 * worldSurface];
+            int size = World.SIZE - 2;
+            int worldSurface = size * size;
+            int nbLayers = 2;
+            float[] values = new float[nbLayers * worldSurface];
 
-            // Create wall array borders
-            //for (int i = 0; i < World.SIZE; i++)
-            //{
-            //    values[i] = 1;
-            //    values[(World.SIZE - 1) * World.SIZE + i] = 1;
-            //    values[i * World.SIZE] = 1;
-            //    values[i * World.SIZE + (World.SIZE - 1)] = 1;
-            //}
-            values[worldSurface + coinPosition.Y * World.SIZE + coinPosition.X] = 1;
-            values[worldSurface * 2 + playerPosition.Y * World.SIZE + playerPosition.X] = 1;
+            values[(coinPosition.Y - 1) * size + (coinPosition.X - 1)] = 1;
+            values[worldSurface + (playerPosition.Y - 1) * size + (playerPosition.X - 1)] = 1;
 
-            // TraceValues(values, "WorldToValue");
+            //TraceValues(values, "WorldToValue");
 
             return values;
         }
@@ -266,21 +258,18 @@ namespace ML.NET.App.PacMan.Agents
         private static void TraceValues(float[] values, string header)
         {
             Trace.WriteLine(header);
-            int worldSurface = World.SIZE * World.SIZE;
-            for (int i = 0; i < World.SIZE; i++) // i => Y
+            int size = World.SIZE - 2;
+            int worldSurface = size * size;
+            for (int i = 0; i < size; i++) // i => Y
             {
                 var dump = string.Empty;
-                for (int j = 0; j < World.SIZE; j++) // j => X
+                for (int j = 0; j < size; j++) // j => X
                 {
-                    if (values[i * World.SIZE + j] != 0)
-                    {
-                        dump += 1;
-                    }
-                    else if (values[worldSurface + i * World.SIZE + j] != 0)
+                    if (values[i * size + j] != 0)
                     {
                         dump += 2;
                     }
-                    else if (values[worldSurface * 2 + i * World.SIZE + j] != 0)
+                    else if (values[worldSurface + i * size + j] != 0)
                     {
                         dump += 9;
                     }
